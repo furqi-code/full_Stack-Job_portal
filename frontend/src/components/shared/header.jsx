@@ -1,4 +1,13 @@
+import { useState } from "react";
+import { SignupDialog } from "./signupDialog";
+import { SigninDialog } from "./signinDialog";
+import { ForgotPassDialog } from "./forgotPassworDialog";
+
 const Header = () => {
+  const [signupDialog, setSignupDialog] = useState(false);
+  const [signinDialog, setSigninDialog] = useState(false);
+  const [forgotPassDialog, setforgotPassDialog] = useState(false);
+
   return (
     <>
       <header className="bg-white shadow-md border-b border-gray-300 sticky top-0 z-50">
@@ -42,19 +51,41 @@ const Header = () => {
 
             {/* Right Side Actions */}
             <div className="hidden md:flex items-center space-x-4">
-              <a
-                href="#"
-                className="px-5 py-2 border-2 border-gray-400 text-gray-600 rounded-lg hover:bg-gray-600 hover:text-white transition duration-300 ease-in-out focus:outline-none"
+              <button
+                type="button"
+                onClick={() => setSigninDialog(true)}
+                className="px-5 py-2 border-2 border-gray-400 text-gray-600 rounded-lg hover:bg-gray-600 hover:text-white transition duration-300 ease-in-out focus:outline-none cursor-pointer"
               >
                 Login
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                type="button"
+                onClick={() => setSignupDialog(true)}
                 className="px-5 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-800 transition duration-300 ease-in-out shadow-sm cursor-pointer focus:outline-none"
               >
                 Register
-              </a>
+              </button>
             </div>
+            {signupDialog && (
+              <SignupDialog
+                setSigninDialog={setSigninDialog}
+                setSignupDialog={setSignupDialog}
+              />
+            )}
+            {signinDialog && (
+              <SigninDialog
+                setSignupDialog={setSignupDialog}
+                setSigninDialog={setSigninDialog}
+                setforgotPassDialog={setforgotPassDialog}
+              />
+            )}
+            {/* this btn inside login diagnol */}
+            {forgotPassDialog && (
+              <ForgotPassDialog
+                setforgotPassDialog={setforgotPassDialog}
+                setSigninDialog={setSigninDialog}
+              />
+            )}
           </div>
         </nav>
       </header>
