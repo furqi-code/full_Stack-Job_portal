@@ -1,9 +1,13 @@
+create database job_board;
+use job_board;
+
 -- Users table
 CREATE TABLE users (
   id INT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  role ENUM('seeker', 'employer', 'admin') NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('job_seeker', 'employer', 'admin') NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -13,7 +17,7 @@ CREATE TABLE profiles (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
-  phone VARCHAR(20),
+  phone VARCHAR(20),	
   location_lat DECIMAL(10, 8),
   location_lng DECIMAL(11, 8),
   about TEXT,
@@ -63,3 +67,12 @@ CREATE TABLE applications (
   FOREIGN KEY (job_id) REFERENCES jobs(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+select * from users;
+select * from profiles;
+select * from skills;
+select * from user_skills;
+select * from jobs;
+select * from applications;
+
+drop database job_board;

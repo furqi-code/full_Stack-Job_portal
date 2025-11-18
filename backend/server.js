@@ -5,6 +5,8 @@ const PORT = parseInt(process.env.PORT) || 3000;
 const cors = require("cors");
 const { Auth } = require("./Authmiddleware");
 
+// Local modules
+const register = require("./router/register");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,6 +17,7 @@ app.use(
 );
 // app.use(Auth);
 
+app.use('/register', register);
 
 app.listen(PORT, function () {
   console.log(`Server started on port ${PORT}`);
