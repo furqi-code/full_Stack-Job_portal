@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 
-export function ForgotPassDialog({ setforgotPassDialog }) {
+export function ForgotPassDialog({ setforgotPassDialog, setSigninDialog }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const emailRef = useRef();
   const newPasswordRef = useRef();
   const confirmPasswordRef = useRef();
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,6 +35,7 @@ export function ForgotPassDialog({ setforgotPassDialog }) {
         setSuccess("Password reset successful. Redirecting to login...");
         setTimeout(() => {
           setforgotPassDialog(false);
+          setSigninDialog(true);
         }, 2000);
       })
       .catch((err) => {
@@ -111,18 +114,12 @@ export function ForgotPassDialog({ setforgotPassDialog }) {
                 >
                   Save 
                 </button>
-                <button
-                  type="button"
-                  className="mt-2 w-full rounded-md bg-red-300 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-red-700 focus:shadow-none active:bg-red-700 hover:bg-red-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none cursor-pointer mb-2"
-                  onClick={() => setforgotPassDialog(false)}
-                >
-                  Cancel
-                </button>
                 <p className="flex justify-center mt-6 text-sm text-slate-600">
                   Remember your password?
                   <button
                     onClick={() => {
                       setforgotPassDialog(false);
+                      setSigninDialog(true);
                     }}
                     className="ml-1 text-sm font-semibold text-slate-700 underline cursor-pointer"
                   >

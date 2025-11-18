@@ -15,6 +15,10 @@ app.use(
 );
 // app.use(Auth);
 
+const register = require("./router/register");
+
+app.use('/register', register);
+
 
 app.listen(PORT, function () {
   console.log(`Server started on port ${PORT}`);
