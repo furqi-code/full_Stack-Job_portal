@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import axios from "axios";
 
-export function ForgotPassDialog({ setforgotPassDialog }) {
+export function ForgotPassDialog({ showforgotPassDialog }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const emailRef = useRef();
@@ -32,7 +32,7 @@ export function ForgotPassDialog({ setforgotPassDialog }) {
       .then((res) => {
         setSuccess("Password reset successful. Redirecting to login...");
         setTimeout(() => {
-          setforgotPassDialog(false);
+          showforgotPassDialog(false);
         }, 2000);
       })
       .catch((err) => {
@@ -114,7 +114,7 @@ export function ForgotPassDialog({ setforgotPassDialog }) {
                 <button
                   type="button"
                   className="mt-2 w-full rounded-md bg-red-300 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-red-700 focus:shadow-none active:bg-red-700 hover:bg-red-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none cursor-pointer mb-2"
-                  onClick={() => setforgotPassDialog(false)}
+                  onClick={() => showforgotPassDialog(false)}
                 >
                   Cancel
                 </button>
@@ -122,7 +122,7 @@ export function ForgotPassDialog({ setforgotPassDialog }) {
                   Remember your password?
                   <button
                     onClick={() => {
-                      setforgotPassDialog(false);
+                      showforgotPassDialog(false);
                     }}
                     className="ml-1 text-sm font-semibold text-slate-700 underline cursor-pointer"
                   >
