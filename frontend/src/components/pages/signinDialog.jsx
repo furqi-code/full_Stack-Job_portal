@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useRef, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { jobContext } from "../../store/jobContext";
 import axios from "axios";
 
 export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDialog }) {
+  const { setIsloggedin } = useContext(jobContext)
   const emailRef = useRef();
   const passwordRef = useRef();
   const [role, setRole] = useState(""); 
@@ -14,24 +16,23 @@ export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDi
     e.preventDefault();
     setError("");
     setSuccess("");
-
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
-
     axios({
       method: "POST",
       url: "http://localhost:1111/login",
       data: {
         email,
         password,
-        role, // send selected role
+        role, 
       },
+      withCredentials: true ,
     })
       .then((res) => {
         setSuccess("Login successful. Redirecting to home page...");
-        localStorage.setItem("userDetail", res.data.token);
         setTimeout(() => {
           setSigninDialog(false);
+          setIsloggedin(true);
           navigate("/");
         }, 2000);
       })
