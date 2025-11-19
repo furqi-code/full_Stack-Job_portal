@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { SignupDialog } from "../pages/signupDialog";
 import { SigninDialog } from "../pages/signinDialog";
 import { ForgotPassDialog } from "../pages/forgotPassworDialog";
@@ -52,14 +52,22 @@ const Header = () => {
             {/* Navigation */}
             <nav className="hidden md:block">
               <ul className="flex items-center space-x-8">
-                {["Home", "Jobs", "Profile"].map((item) => (
+                <li>
+                  <Link
+                    to="/"
+                    className="nav-link text-gray-700 hover:text-blue-600 font-medium whitespace-nowrap"
+                  >
+                    Home
+                  </Link>
+                </li>
+                {["Jobs", "Profile"].map((item) => (
                   <li key={item}>
-                    <a
-                      href={`#${item}`}
+                    <Link
+                      to={`/${item}`}
                       className="nav-link text-gray-700 hover:text-blue-600 font-medium whitespace-nowrap"
                     >
                       {item}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

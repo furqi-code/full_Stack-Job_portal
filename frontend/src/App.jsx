@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router-dom"
 import Home from "./components/pages/home"
 import NotFound from "./components/pages/notFoundpage"
 import HomeDesign from "./components/pages/homeDesign"
+import Jobs from "./components/pages/jobs"
 
 const routes = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const routes = createBrowserRouter([
       {
         index: true,
         element: <HomeDesign />
+      },
+      {
+        path: '/Jobs',
+        element: <Jobs />
       }
     ]
   }
