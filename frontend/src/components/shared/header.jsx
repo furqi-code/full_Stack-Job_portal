@@ -1,15 +1,28 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router";
 import { SignupDialog } from "../pages/signupDialog";
 import { SigninDialog } from "../pages/signinDialog";
 import { ForgotPassDialog } from "../pages/forgotPassworDialog";
 import { jobContext } from "../../store/jobContext";
+import axios from "axios";
 
 const Header = () => {
   const [signupDialog, setSignupDialog] = useState(false);
   const [signinDialog, setSigninDialog] = useState(false);
   const [forgotPassDialog, setforgotPassDialog] = useState(false);
-  const { isLoggedin } = useContext(jobContext);
-  console.log("header login status - ", isLoggedin);
+  const { isLoggedin, setIsloggedin } = useContext(jobContext);
+  const navigate = useNavigate();
+
+  const logout = () => {
+    axios({
+      method: "POST",
+      url: "http://localhost:1111/logout",
+      withCredentials: true,
+    }).then(() => {
+      setIsloggedin(false);
+      navigate("/");
+    });
+  };
 
   return (
     <>
@@ -74,9 +87,7 @@ const Header = () => {
               ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    
-                  }}
+                  onClick={logout}
                   className="px-5 py-2 border-2 border-red-400 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition duration-300 ease-in-out focus:outline-none cursor-pointer"
                 >
                   Logout
