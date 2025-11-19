@@ -18,8 +18,8 @@ CREATE TABLE profiles (
   user_id INT NOT NULL,
   name VARCHAR(255) NOT NULL,
   phone VARCHAR(20),	
-  location_lat DECIMAL(10, 8),
-  location_lng DECIMAL(11, 8),
+  address TEXT,
+  job_role VARCHAR(255),
   about TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -45,16 +45,19 @@ CREATE TABLE jobs (
   employer_id INT NOT NULL,
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
-  type ENUM('full-time', 'part-time', 'contract', 'remote') NOT NULL,
-  location_lat DECIMAL(10, 8),
-  location_lng DECIMAL(11, 8),
+  company VARCHAR(255) NOT NULL,
+  type ENUM('Full-time', 'Part-time', 'Contract') NOT NULL,
+  work_mode ENUM('On-site', 'Remote', 'Hybrid') NOT NULL,
+  location TEXT,
+  experience_min INT,
+  experience_max INT,
   salary_min DECIMAL(10, 2),
   salary_max DECIMAL(10, 2),
-  salary_currency CHAR(3),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   expires_at TIMESTAMP,
   FOREIGN KEY (employer_id) REFERENCES users(id)
 );
+
 
 -- Applications table
 CREATE TABLE applications (
@@ -74,5 +77,6 @@ select * from skills;
 select * from user_skills;
 select * from jobs;
 select * from applications;
+
 
 drop database job_board;

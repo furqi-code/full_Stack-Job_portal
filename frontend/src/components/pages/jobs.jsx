@@ -50,7 +50,7 @@ const Jobs = () => {
             >
               {filterData.map((filter) => (
                 <div className="mb-5" key={filter.filterType}>
-                  <h2 className="mb-3 text-sm font-semibold text-gray-600">
+                  <h2 className="mb-3 text-sm font-bold text-gray-600">
                     Filter by {filter.filterType}
                   </h2>
                   <div className="flex flex-col gap-1">

@@ -4,6 +4,7 @@ import Home from "./components/pages/home"
 import NotFound from "./components/pages/notFoundpage"
 import HomeDesign from "./components/pages/homeDesign"
 import Jobs from "./components/pages/jobs"
+import JobDetail from "./components/pages/jobDetails"
 
 const routes = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const routes = createBrowserRouter([
       {
         path: '/Jobs',
         element: <Jobs />
+      },
+      {
+        path: '/Jobs/:jobId',
+        element: <JobDetail />
       }
     ]
   }
