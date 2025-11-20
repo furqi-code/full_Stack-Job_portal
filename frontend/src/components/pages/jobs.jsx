@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
 
@@ -28,49 +29,39 @@ const filterData = [
 
 const Jobs = () => {
   const [clicked, setClicked] = useState("");
-  const [cancelClicked, setCancelClicked] = useState(true);
+  const [cancelFilter, setCancelFilter] = useState(true);
   const [joblist, setJoblist] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   console.log("joblist in job page\n", joblist);
 
   useEffect(() => {
     setLoading(true);
+    const filterBy = searchParams.get("filter");
+    const filterType = searchParams.get("filterType");
     axios({
       method: "GET",
       url: "http://localhost:1111/joblist",
+      params: filterBy && filterType ? { filterBy, filterType } : null,
     })
       .then((res) => {
         setJoblist(res.data.data);
         setLoading(false);
       })
       .catch((err) => {
-        console.log("Couldn't fetch joblist");
+        setError("Couldn't fetch joblist");
         setLoading(false);
       });
-  }, [cancelClicked]);
+
+    setClicked(filterBy || "");
+  }, [cancelFilter, searchParams]);
 
   // on select Filter
   const handleChange = (value, filterType) => {
     setLoading(true);
     setClicked(value);
-    console.log("clicked filter - ", clicked); // undefined bcz immediate re-render nhi hota
-    axios({
-      method: "GET",
-      url: "http://localhost:1111/joblist",
-      params: {
-        filterBy: value,
-        filterType,
-      },
-    })
-      .then((res) => {
-        setJoblist(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("Unable to load jobs based on your selected filter. Please try again!!");
-        setLoading(false);
-      });
+    setSearchParams({ filter: value, filterType });
   };
 
   return (
@@ -106,7 +97,9 @@ const Jobs = () => {
                           value={data}
                           className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                           checked={clicked === data}
-                          onChange={(event) => handleChange(event.target.value, filter.filterType)}
+                          onChange={(event) =>
+                            handleChange(event.target.value, filter.filterType)
+                          }
                         />
                         <span className="ml-2">{data}</span>
                       </label>
@@ -117,7 +110,8 @@ const Jobs = () => {
               <button
                 className="mt-4 px-5 py-2 bg-white border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-200 cursor-grab"
                 onClick={() => {
-                  setCancelClicked(!cancelClicked);
+                  setCancelFilter(!cancelFilter);
+                  setSearchParams();
                   setClicked("");
                 }}
               >
