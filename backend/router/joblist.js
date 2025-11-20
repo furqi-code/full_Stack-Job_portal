@@ -43,4 +43,26 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Fetch one Job by id
+router.get("/oneJob", async (req, res) => {
+  try {
+    const { id } = req.query;
+    if (!id) {
+      return res
+        .status(400)
+        .send({ message: "id query parameter is required" });
+    }
+    const job = await executeQuery(`SELECT * FROM jobs WHERE id = ?`, [id]);
+    if (job.length === 0) {
+      return res.status(404).send({ message: "Job not found" });
+    }
+    res.status(200).send({ data: job[0] });
+  } catch (err) {
+    console.error("Error fetching job: ", err);
+    res.status(500).send({
+      message: err.message || "Something went wrong",
+    });
+  }
+});
+
 module.exports = router;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
 
@@ -138,7 +139,9 @@ const Jobs = () => {
               ) : joblist.length > 0 ? (
                 <div className="grid grid-cols-3 gap-8">
                   {joblist.map((job) => (
-                    <JobCard job={job} />
+                    <Link to={`/jobs/${job.id}`} key={job.id}>
+                      <JobCard job={job} />
+                    </Link>
                   ))}
                 </div>
               ) : (
