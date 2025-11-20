@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
 
@@ -12,24 +12,64 @@ const filterData = [
     array: [
       "Frontend Developer",
       "Backend Developer",
-      "FullStack Developer",
       "Network Engineer",
+      "DevOps Engineer",
+      "Sales Executive",
+      "AI Researcher",
       "Data Analyst",
-      "DevOps",
     ],
   },
   {
     filterType: "Salary",
-    array: ["0-40k", "42-1L", "1L to 5L", "7L to 11L"],
+    array: ["4L to 6L", "7L to 11L", "12L to 15L", "16L to 22L"],
   },
 ];
 
 const Jobs = () => {
   const [clicked, setClicked] = useState("");
+  const [cancelClicked, setCancelClicked] = useState(true);
+  const [joblist, setJoblist] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  console.log("joblist in job page\n", joblist);
 
-  const handleChange = (event) => {
-    setClicked(event.target.value);
-    // make API call here for matching jobs
+  useEffect(() => {
+    setLoading(true);
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/joblist",
+    })
+      .then((res) => {
+        setJoblist(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("Couldn't fetch joblist");
+        setLoading(false);
+      });
+  }, [cancelClicked]);
+
+  // on select Filter
+  const handleChange = (value, filterType) => {
+    setLoading(true);
+    setClicked(value);
+    console.log("clicked filter - ", clicked); // undefined bcz immediate re-render nhi hota
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/joblist",
+      params: {
+        filterBy: value,
+        filterType,
+      },
+    })
+      .then((res) => {
+        setJoblist(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Unable to load jobs based on your selected filter. Please try again!!");
+        setLoading(false);
+      });
   };
 
   return (
@@ -45,7 +85,7 @@ const Jobs = () => {
           </h1>
           <div className="flex gap-10">
             <div
-              className="w-61 p-4 bg-white rounded-lg shadow-md sticky top-30 h-fit"
+              className="w-61 p-4 bg-white rounded-lg shadow-md sticky top-24 h-fit"
               style={{ backgroundColor: "#e6f4ea" }}
             >
               {filterData.map((filter) => (
@@ -65,7 +105,7 @@ const Jobs = () => {
                           value={data}
                           className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                           checked={clicked === data}
-                          onChange={handleChange}
+                          onChange={(event) => handleChange(event.target.value, filter.filterType)}
                         />
                         <span className="ml-2">{data}</span>
                       </label>
@@ -73,12 +113,60 @@ const Jobs = () => {
                   </div>
                 </div>
               ))}
+              <button
+                className="mt-4 px-5 py-2 bg-white border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-200 cursor-grab"
+                onClick={() => {
+                  setCancelClicked(!cancelClicked);
+                  setClicked("");
+                }}
+              >
+                Clear Filters
+              </button>
             </div>
 
             <div className="flex-1">
-              <div className="grid grid-cols-3 gap-8">
-                {/* Map your job cards here */}
-              </div>
+              {loading ? (
+                <div className="flex justify-center items-center min-h-[300px]">
+                  <p className="text-gray-600 text-lg">
+                    Loading list of jobs...
+                  </p>
+                </div>
+              ) : error ? (
+                <div className="flex justify-center items-center min-h-[300px]">
+                  <p className="text-red-600 text-lg">{error}</p>
+                </div>
+              ) : joblist.length > 0 ? (
+                <div className="grid grid-cols-3 gap-8">
+                  {joblist.map((job) => (
+                    <JobCard job={job} />
+                  ))}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    padding: "40px",
+                    backgroundColor: "#f0f4f8",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontFamily:
+                        "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                      fontWeight: 300,
+                      fontSize: "1.5rem",
+                      color: "#555",
+                      textAlign: "center",
+                    }}
+                  >
+                    No jobs available right now
+                  </h2>
+                </div>
+              )}
             </div>
           </div>
         </div>

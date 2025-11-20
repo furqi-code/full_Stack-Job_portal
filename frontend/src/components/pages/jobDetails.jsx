@@ -1,61 +1,115 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router";
 import axios from "axios";
 
 const JobDetail = () => {
-  // Dummy hardcoded job data 
-  const job = {
-    title: "Senior Frontend Developer",
-    company: "Oracle",
-    type: "Contract",
-    workMode: "Remote",
-    salary_min: 12,
-    salary_max: 18,
-    location: "Bangalore",
-    description:
-      "Develop and maintain user-friendly web applications with modern technologies, ensuring seamless user experience and responsive design.",
-    experience_min: 4,
-    experience_max: 6,
-    applications: [1, 2, 3, 4],
-    createdAt: "2025-11-15T10:00:00Z",
+  const [jobSearch, setJob] = useState(null);
+  const [isApplied, setisApplied] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { jobId } = useParams();
+  console.log("job id - ", jobId);
+
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`http://localhost:1111/joblist/oneJob?id=${jobId}`)
+      .then((res) => {
+        setJob(res.data.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Couldn't fetch job details. Please try again later.");
+        setLoading(false);
+      });
+  }, []);
+
+  const fallBack = {
+    title: "ABC",
+    company: "XYZ",
+    description: "",
+    location: "",
+    work_mode: "",
+    type: "",
+    salary_min: 0,
+    salary_max: 0,
+    experience_min: 0,
+    experience_max: 0,
+    applications: [],
+    created_at: "",
   };
+  const job = jobSearch || fallBack;
 
   const getModeColor = (mode) => {
     if (mode === "Hybrid") return "bg-yellow-100 text-yellow-700";
     if (mode === "Remote") return "bg-green-100 text-green-700";
-    return "bg-red-100 text-red-700"; 
+    return "bg-red-100 text-red-700";
   };
   const getTypeColor = (type) => {
     const trimmedType = type.trim();
     if (trimmedType === "Full-time") return "bg-green-100 text-green-700";
     if (trimmedType === "Part-time") return "bg-yellow-100 text-yellow-700";
-    return "bg-red-100 text-red-700"; 
+    return "bg-red-100 text-red-700";
   };
 
-  const modeColor = getModeColor(job.workMode);
+  const modeColor = getModeColor(job.work_mode);
   const typeColor = getTypeColor(job.type);
-  const isApplied = false;
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto my-20 p-8 bg-white rounded-lg shadow-lg">
+        <div className="flex justify-center items-center min-h-[300px]">
+          <p className="text-gray-600 text-lg">Loading job details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto my-20 p-8 bg-white rounded-lg shadow-lg">
+        <div className="flex justify-center items-center min-h-[300px] text-red-600">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto my-20 p-8 bg-white rounded-lg shadow-lg">
       <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900">{job.title}</h1>
+          {/* Company logo and name */}
+          <div className="flex items-center gap-4 mb-4">
+            {job.companyLogo && (
+              <img
+                src={job.companyLogo}
+                alt={`${job.company} logo`}
+                className="w-16 h-16 object-contain rounded-lg"
+              />
+            )}
+            <h1 className="text-3xl font-bold text-gray-900">
+              {job.company}
+            </h1>
+          </div>
+
+          <h2 className="text-2xl font-semibold text-gray-900">{job.title}</h2>
           <div className="mt-2 flex flex-wrap gap-4">
             <span
               className={`inline-block ${typeColor} rounded-full px-3 py-1 text-sm font-semibold`}
             >
               {job.type}
             </span>
-            <span   
+            <span
               className={`inline-block ${modeColor} rounded-full px-3 py-1 text-sm font-semibold`}
             >
-              {job.workMode}
+              {job.work_mode}
             </span>
             <span className="inline-block bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold">
               {job.location}
             </span>
           </div>
         </div>
+
         <button
           disabled={isApplied}
           className={`rounded-lg px-6 py-2 text-white font-bold transition-colors duration-300 ${
@@ -79,16 +133,12 @@ const JobDetail = () => {
             <p className="pl-4">{job.title}</p>
           </div>
           <div>
-            <h3 className="font-bold">Company</h3>
-            <p className="pl-4">{job.company}</p>
-          </div>
-          <div>
             <h3 className="font-bold">Description</h3>
             <p className="pl-4 leading-relaxed">{job.description}</p>
           </div>
           <div>
             <h3 className="font-bold">Work Mode</h3>
-            <p className="pl-4">{job.workMode}</p>
+            <p className="pl-4">{job.work_mode}</p>
           </div>
           <div>
             <h3 className="font-bold">Experience Required</h3>
@@ -103,12 +153,8 @@ const JobDetail = () => {
             </p>
           </div>
           <div>
-            <h3 className="font-bold">Total Applicants</h3>
-            <p className="pl-4">{job.applications.length}</p>
-          </div>
-          <div>
             <h3 className="font-bold">Posted Date</h3>
-            <p className="pl-4">{job.createdAt.split("T")[0]}</p>
+            <p className="pl-4">{job.created_at.split("T")[0]}</p>
           </div>
         </div>
       </section>
