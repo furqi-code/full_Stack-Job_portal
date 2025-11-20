@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
         jobs = await executeQuery(`select * from jobs where location = ?`, [filterBy]);
       } else if (filterType === "Role") {
         jobs = await executeQuery(`select * from jobs where title = ?`, [filterBy]);
-      } else if (filterType === "Salary") {
+      } else if (filterType === "Salary") { // Incomplete queries, needs to be done asap
         if(filterBy === '4L to 6L'){
           jobs = await executeQuery(`select * from jobs where salary = ?`, [filterBy]);
         }
@@ -48,9 +48,7 @@ router.get("/oneJob", async (req, res) => {
   try {
     const { id } = req.query;
     if (!id) {
-      return res
-        .status(400)
-        .send({ message: "id query parameter is required" });
+      return res.status(400).send({ message: "id query parameter is required" });
     }
     const job = await executeQuery(`SELECT * FROM jobs WHERE id = ?`, [id]);
     if (job.length === 0) {

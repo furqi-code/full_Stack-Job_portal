@@ -50,7 +50,7 @@ const Jobs = () => {
         setLoading(false);
       })
       .catch((err) => {
-        setError("Couldn't fetch joblist");
+        setError("Couldn't fetch the joblist");
         setLoading(false);
       });
 
@@ -97,9 +97,7 @@ const Jobs = () => {
                           value={data}
                           className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                           checked={clicked === data}
-                          onChange={(event) =>
-                            handleChange(event.target.value, filter.filterType)
-                          }
+                          onChange={(event) => handleChange(event.target.value, filter.filterType) }
                         />
                         <span className="ml-2">{data}</span>
                       </label>

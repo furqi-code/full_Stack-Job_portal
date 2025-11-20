@@ -73,28 +73,28 @@ CREATE TABLE applications (
 
 -- This job posting will be done by the employer, but here I am inserting it all to test the UI of the job page
 INSERT INTO jobs (
-  id, employer_id, title, description, company, type, work_mode, location,
+  employer_id, title, description, company, type, work_mode, location,
   experience_min, experience_max, salary_min, salary_max, companyLogo, created_at, expires_at
 ) VALUES
-(NULL, 1, 'FullStack Developer', 'FullStack Developer role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Hybrid', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Frontend Developer', 'Frontend Developer role based in Bangalore with salary range 4L to 6L.', 'Facebook', 'Part-time', 'Remote', 'Bangalore', 0, 5, 4, 6, 'https://logo.clearbit.com/facebook.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Backend Developer', 'Backend Developer role based in Hyderabad with salary range 4L to 6L.', 'Uber', 'Contract', 'On-site', 'Hyderabad', 0, 5, 4, 6, 'https://logo.clearbit.com/uber.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Network Engineer', 'Network Engineer role based in Kolkata with salary range 7L to 11L.', 'Google', 'Full-time', 'On-site', 'Kolkata', 0, 5, 7, 11, 'https://logo.clearbit.com/google.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'DevOps Engineer', 'DevOps Engineer role based in Mumbai with salary range 4L to 6L.', 'Amazon', 'Contract', 'Hybrid', 'Mumbai', 0, 5, 4, 6, 'https://logo.clearbit.com/amazon.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Sales Executive', 'Sales Executive role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Remote', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Data Analyst', 'Data Analyst role based in Bangalore with salary range 7L to 11L.', 'Accenture', 'Part-time', 'On-site', 'Bangalore', 0, 5, 7, 11, 'https://logo.clearbit.com/accenture.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'UX Designer', 'UX Designer role based in Kashmir with salary range 12L to 15L.', 'Wipro', 'Contract', 'Hybrid', 'Kashmir', 0, 5, 12, 15, 'https://logo.clearbit.com/wipro.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Product Manager', 'Product Manager role based in Hyderabad with salary range 16L to 22L.', 'Adobe', 'Full-time', 'Remote', 'Hyderabad', 0, 5, 16, 22, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_ptlo3aGM1csGULAvNxzL2jeC-ibonON0cigmkce2BVwh8WA9dQddaqMJ5Od3ezAyNHU&usqp=CAU', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Marketing Specialist', 'Marketing Specialist role based in Shanghai with salary range 7L to 11L.', 'Salesforce', 'Part-time', 'On-site', 'Shanghai', 0, 5, 7, 11, 'https://logo.clearbit.com/salesforce.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'HR Manager', 'HR Manager role based in Shenzhen with salary range 12L to 15L.', 'IBM', 'Contract', 'Hybrid', 'Shenzhen', 0, 5, 12, 15, 'https://crystalpng.com/wp-content/uploads/2025/05/ibm-logo.png', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Cloud Engineer', 'Cloud Engineer role based in San Francisco with salary range $120K to $150K.', 'Google', 'Full-time', 'Remote', 'San Francisco', 2, 7, 120, 150, 'https://logo.clearbit.com/google.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Data Scientist', 'Data Scientist role based in London with salary range £60K to £90K.', 'Microsoft', 'Contract', 'Hybrid', 'London', 3, 8, 60, 90, 'https://logo.clearbit.com/microsoft.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'AI Researcher', 'AI Researcher role based in Toronto with salary range CAD 80K to CAD 110K.', 'OpenAI', 'Full-time', 'Remote', 'Toronto', 3, 8, 80, 110, 'https://logo.clearbit.com/openai.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Mobile Developer', 'Mobile Developer role based in Berlin with salary range €50K to €70K.', 'Spotify', 'Part-time', 'Hybrid', 'Berlin', 1, 5, 50, 70, 'https://logo.clearbit.com/spotify.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Cybersecurity Specialist', 'Cybersecurity Specialist role based in Sydney with salary range AUD 90K to AUD 120K.', 'Cisco', 'Full-time', 'On-site', 'Sydney', 4, 9, 90, 120, 'https://logo.clearbit.com/cisco.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'UX Researcher', 'UX Researcher role based in Amsterdam with salary range €55K to €75K.', 'Booking.com', 'Full-time', 'Remote', 'Amsterdam', 2, 6, 55, 75, 'https://logo.clearbit.com/booking.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Project Coordinator', 'Project Coordinator role based in Paris with salary range €45K to €65K.', 'Capgemini', 'Contract', 'Hybrid', 'Paris', 1, 5, 45, 65, 'https://logo.clearbit.com/capgemini.com', CURRENT_TIMESTAMP, NULL),
-(NULL, 1, 'Technical Writer', 'Technical Writer role based in Vancouver with salary range CAD 60K to CAD 85K.', 'Red Hat', 'Part-time', 'Remote', 'Vancouver', 1, 6, 60, 85, 'https://logo.clearbit.com/redhat.com', CURRENT_TIMESTAMP, NULL);
+(1, 'FullStack Developer', 'FullStack Developer role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Hybrid', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Frontend Developer', 'Frontend Developer role based in Bangalore with salary range 4L to 6L.', 'Facebook', 'Part-time', 'Remote', 'Bangalore', 0, 5, 4, 6, 'https://logo.clearbit.com/facebook.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Backend Developer', 'Backend Developer role based in Hyderabad with salary range 4L to 6L.', 'Uber', 'Contract', 'On-site', 'Hyderabad', 0, 5, 4, 6, 'https://logo.clearbit.com/uber.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Network Engineer', 'Network Engineer role based in Kolkata with salary range 7L to 11L.', 'Google', 'Full-time', 'On-site', 'Kolkata', 0, 5, 7, 11, 'https://logo.clearbit.com/google.com', CURRENT_TIMESTAMP, NULL),
+(1, 'UX Researcher', 'UX Researcher role based in Amsterdam with salary range €55K to €75K.', 'Booking.com', 'Full-time', 'Remote', 'Amsterdam', 2, 6, 55, 75, 'https://logo.clearbit.com/booking.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Sales Executive', 'Sales Executive role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Remote', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Data Analyst', 'Data Analyst role based in Bangalore with salary range 7L to 11L.', 'Accenture', 'Part-time', 'On-site', 'Bangalore', 0, 5, 7, 11, 'https://logo.clearbit.com/accenture.com', CURRENT_TIMESTAMP, NULL),
+(1, 'UX Designer', 'UX Designer role based in Kashmir with salary range 12L to 15L.', 'Wipro', 'Contract', 'Hybrid', 'Kashmir', 0, 5, 12, 15, 'https://logo.clearbit.com/wipro.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Product Manager', 'Product Manager role based in Hyderabad with salary range 16L to 22L.', 'Adobe', 'Full-time', 'Remote', 'Hyderabad', 0, 5, 16, 22, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_ptlo3aGM1csGULAvNxzL2jeC-ibonON0cigmkce2BVwh8WA9dQddaqMJ5Od3ezAyNHU&usqp=CAU', CURRENT_TIMESTAMP, NULL),
+(1, 'Marketing Specialist', 'Marketing Specialist role based in Shanghai with salary range 7L to 11L.', 'Salesforce', 'Part-time', 'On-site', 'Shanghai', 0, 5, 7, 11, 'https://logo.clearbit.com/salesforce.com', CURRENT_TIMESTAMP, NULL),
+(1, 'HR Manager', 'HR Manager role based in Shenzhen with salary range 12L to 15L.', 'IBM', 'Contract', 'Hybrid', 'Shenzhen', 0, 5, 12, 15, 'https://crystalpng.com/wp-content/uploads/2025/05/ibm-logo.png', CURRENT_TIMESTAMP, NULL),
+(1, 'Cloud Engineer', 'Cloud Engineer role based in San Francisco with salary range $120K to $150K.', 'Google', 'Full-time', 'Remote', 'San Francisco', 2, 7, 120, 150, 'https://logo.clearbit.com/google.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Data Scientist', 'Data Scientist role based in London with salary range £60K to £90K.', 'Microsoft', 'Contract', 'Hybrid', 'London', 3, 8, 60, 90, 'https://logo.clearbit.com/microsoft.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Project Coordinator', 'Project Coordinator role based in Paris with salary range €45K to €65K.', 'Capgemini', 'Contract', 'Hybrid', 'Paris', 1, 5, 45, 65, 'https://logo.clearbit.com/capgemini.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Mobile Developer', 'Mobile Developer role based in Berlin with salary range €50K to €70K.', 'Spotify', 'Part-time', 'Hybrid', 'Berlin', 1, 5, 50, 70, 'https://logo.clearbit.com/spotify.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Cybersecurity Specialist', 'Cybersecurity Specialist role based in Sydney with salary range AUD 90K to AUD 120K.', 'Cisco', 'Full-time', 'On-site', 'Sydney', 4, 9, 90, 120, 'https://logo.clearbit.com/cisco.com', CURRENT_TIMESTAMP, NULL),
+(1, 'DevOps Engineer', 'DevOps Engineer role based in Mumbai with salary range 4L to 6L.', 'Amazon', 'Contract', 'Hybrid', 'Mumbai', 0, 5, 4, 6, 'https://logo.clearbit.com/amazon.com', CURRENT_TIMESTAMP, NULL),
+(1, 'AI Researcher', 'AI Researcher role based in Toronto with salary range CAD 80K to CAD 110K.', 'OpenAI', 'Full-time', 'Remote', 'Toronto', 3, 8, 80, 110, 'https://logo.clearbit.com/openai.com', CURRENT_TIMESTAMP, NULL),
+(1, 'Technical Writer', 'Technical Writer role based in Vancouver with salary range CAD 60K to CAD 85K.', 'Red Hat', 'Part-time', 'Remote', 'Vancouver', 1, 6, 60, 85, 'https://logo.clearbit.com/redhat.com', CURRENT_TIMESTAMP, NULL);
 
 
 

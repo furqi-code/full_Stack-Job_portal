@@ -1,6 +1,28 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router";
 import JobCard from "../shared/jobCard";
+import axios from "axios";
 
 const HomeDesign = () => {
+  const [joblist, setJoblist] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/joblist",
+    })
+      .then((res) => {
+        setJoblist(res.data.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("Couldn't fetch latest joblist");
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div style={{ backgroundColor: "#e6f4ea" }} className="w-full">
       <main className="flex flex-col items-center justify-center px-6 py-12 min-h-[calc(100vh-8rem)] max-w-7xl mx-auto">
@@ -48,7 +70,46 @@ const HomeDesign = () => {
             Featured Job Openings
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
-            {/* Map your job cards here */}
+            {!loading ? (
+              <>
+                {joblist.slice(-5).reverse().map((job) => (
+                    <Link to={`/jobs/${job.id}`} key={job.id}>
+                      <JobCard job={job} />
+                    </Link>
+                  ))}
+              </>
+            ) : (
+              <div
+                className="flex justify-center items-center min-h-[300px]"
+                role="status"
+                aria-live="polite"
+                aria-busy="true"
+              >
+                <svg
+                  className="animate-spin h-8 w-8 text-green-600 mr-3"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+                <span className="text-gray-600 text-lg">
+                  Loading list of jobs...
+                </span>
+              </div>
+            )}
           </div>
         </section>
       </main>

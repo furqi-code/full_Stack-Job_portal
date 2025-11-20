@@ -29,7 +29,7 @@ const JobCard = ({ job }) => {
         </p>
         <p className="text-gray-700 mb-6">{job.description}</p>
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-green-600">
+          <span className="text-2xl font-semibold text-green-600">
             {job.salary_min} - {job.salary_max} LPA
           </span>
           <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-grab">
