@@ -23,7 +23,7 @@ const filterData = [
   },
   {
     filterType: "Salary",
-    array: ["4L to 6L", "7L to 11L", "12L to 15L", "16L to 22L"],
+    array: ["4L to 6L", "7L to 11L", "12L to 15L", "16L to 45L", "45LPA +"],
   },
 ];
 
