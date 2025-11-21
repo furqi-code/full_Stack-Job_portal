@@ -18,14 +18,14 @@ router.get("/", async (req, res) => {
           break;
 
         case "Salary":
-          if (filterBy === '4L to 6L') {  // comparing the opposite cols but still getting slightly correct results
-            jobs = await executeQuery(`select * from jobs where salary_min >= 4 AND salary_max <= 6`);
+          if (filterBy === '4L to 6L') { 
+            jobs = await executeQuery(`select * from jobs where salary_max >= 4 AND salary_min <= 6`);
           } else if (filterBy === '7L to 11L') {
-            jobs = await executeQuery(`select * from jobs where salary_min >= 7 AND salary_max <= 11`);
+            jobs = await executeQuery(`select * from jobs where salary_max >= 7 AND salary_min <= 11`);
           } else if (filterBy === '12L to 15L') {
-            jobs = await executeQuery(`select * from jobs where salary_min >= 12 AND salary_max <= 15`);
+            jobs = await executeQuery(`select * from jobs where salary_max >= 12 AND salary_min <= 15`);
           } else if (filterBy === '16L to 45L') {
-            jobs = await executeQuery(`select * from jobs where salary_min >= 16 AND salary_max <= 45`);
+            jobs = await executeQuery(`select * from jobs where salary_max >= 16 AND salary_min <= 45`);
           } else if (filterBy === '45LPA +') {
             jobs = await executeQuery(`select * from jobs where salary_min >= 45`);
           }
