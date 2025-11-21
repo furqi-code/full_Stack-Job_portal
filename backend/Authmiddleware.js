@@ -7,7 +7,6 @@ function AuthMiddleware(req, res, next) {
     const payload = jwt.verify(token, SECRET);
     req.user_id = payload.user_id;
     req.user_type = payload.user_type;
-    console.log("middleware userType ", user_type);
     next();
   } catch (error) {
     next();

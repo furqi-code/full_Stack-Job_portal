@@ -11,9 +11,10 @@ Router.post("/", async (req, res) => {
     if (!email || !password || !role) {
       return res.status(409).send("Provide necessary details");
     }
-    const [dbUser] = await executeQuery(`SELECT * FROM users WHERE email = ?`, [email]);
+    const [dbUser] = await executeQuery(`SELECT * FROM users WHERE email = ? AND role = ?`,
+      [email, role]);
     if (!dbUser) {
-      return res.status(401).send("Invalid Email");
+      return res.status(401).send("Invalid Email / Role");
     }
 
     const hashpwrd = dbUser.password;

@@ -1,10 +1,14 @@
 import { useEffect, useReducer, createContext } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
 export const jobContext = createContext({
-  jobList: [],
+  saveJobList: [],
   isLoggedin: undefined,
   setIsloggedin: () => {},
+  getSavedJobList: () => {},
+  handleSaveJobs: () => {},
+  setSaveJobList: () => {},
 });
 
 function reducer(state, action) {
@@ -13,12 +17,13 @@ function reducer(state, action) {
       return {
         ...state,
         isLoggedin: action.payload.status,
+        user_type: action.payload.type,
       };
 
-    case "getJobList":
+    case "getSaveJobs":
       return {
         ...state,
-        jobList: action.payload.jobList,
+        saveJobList: action.payload.saveJobs,
       };
 
     default:
@@ -28,11 +33,13 @@ function reducer(state, action) {
 
 export const JobContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, {
-    jobList: [],
+    saveJobList: [],
     isLoggedin: undefined,
+    user_type: "",
   });
-  console.log("jobList Array \n", state.jobList);
+  console.log("saveJobList Array \n", state.saveJobList);
   console.log("isLoggedin ? ", state.isLoggedin);
+  console.log("user type ? ", state.user_type);
 
   // to set the isLoggedin state
   useEffect(() => {
@@ -44,7 +51,7 @@ export const JobContextProvider = ({ children }) => {
       .then((res) => {
         dispatch({
           type: "activeUser",
-          payload: { status: res.data.isLoggedin },
+          payload: { status: res.data.isLoggedin, type: res.data.user_type },
         });
       })
       .catch(() => {
@@ -61,12 +68,65 @@ export const JobContextProvider = ({ children }) => {
     });
   };
 
+  // when clicked on logout
+  const setSaveJobList = (emptyArr) => {
+    dispatch({
+      type: "getSaveJobs",
+      payload: {
+        saveJobList: [...emptyArr],
+      },
+    });
+  };
+
+  const getSavedJobList = () => {
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/job-seeker/savedJob",
+      withCredentials: true,
+    })
+      .then((res) => {
+        dispatch({
+          type: "getSaveJobs",
+          payload: {
+            saveJobs: res.data.data,
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching saved jobs", error);
+      });
+  };
+
+  const handleSaveJobs = async (job_id) => {
+    if (state.isLoggedin) {
+      if (state.user_type !== "job_seeker") {
+        return toast.warning("Sorry, you aren't a valid user");
+      }
+      try {
+        const res = await axios({
+          method: "POST",
+          url: `http://localhost:1111/job-seeker/saveJob?job_id=${job_id}`,
+          withCredentials: true,
+        });
+        toast.success(res.data.message);
+        getSavedJobList();
+      } catch (err) {
+        toast.error("Sorry, couldn't save this particular job");
+      }
+    } else {
+      toast.error("Kindly login to save this job post");
+    }
+  };
+
   return (
     <jobContext.Provider
       value={{
-        jobList: state.jobList,
+        saveJobList: state.saveJobList,
         isLoggedin: state.isLoggedin,
         setIsloggedin,
+        getSavedJobList,
+        handleSaveJobs,
+        setSaveJobList,
       }}
     >
       {children}

@@ -10,7 +10,7 @@ const Header = () => {
   const [signupDialog, setSignupDialog] = useState(false);
   const [signinDialog, setSigninDialog] = useState(false);
   const [forgotPassDialog, setforgotPassDialog] = useState(false);
-  const { isLoggedin, setIsloggedin } = useContext(jobContext);
+  const { isLoggedin, setIsloggedin, setSaveJobList } = useContext(jobContext);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -20,6 +20,7 @@ const Header = () => {
       withCredentials: true,
     }).then(() => {
       setIsloggedin(false);
+      setSaveJobList([]);
       navigate("/");
     });
   };

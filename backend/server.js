@@ -13,6 +13,8 @@ const logout = require('./router/logout');
 const forgot = require("./router/forgotPassword");
 const isLoggedin = require("./router/auth-status");
 const jobs = require("./router/joblist");
+const job_seeker = require("./router/job-seeker");
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,14 +25,16 @@ app.use(
     credentials: true,
   })
 );
-// app.use(Auth);
+app.use(Auth);
   
+
 app.use('/register', register);
 app.use('/login', login)
 app.use('/logout', logout);
 app.use("/forgotPassword", forgot);
 app.use('/auth/status', isLoggedin)  // to set the state in JobContextProvider
 app.use('/joblist', jobs);
+app.use('/job-seeker', job_seeker);
 
 
 app.listen(PORT, function () {

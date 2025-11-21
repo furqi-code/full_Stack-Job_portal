@@ -10,8 +10,9 @@ Router.get("/", (req, res) => {
     return res.json({ isLoggedin: false });
   }
   try {
-    jwt.verify(token, SECRET);
-    return res.json({ isLoggedin: true });
+    const payload = jwt.verify(token, SECRET);
+    req.user_type = payload.user_type;
+    return res.json({ isLoggedin: true, user_type: req.user_type });
   } catch {
     return res.json({ isLoggedin: false });
   }

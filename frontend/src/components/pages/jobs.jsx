@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useSearchParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
 
@@ -166,6 +167,7 @@ const Jobs = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="bottom-left" />
     </>
   );
 };

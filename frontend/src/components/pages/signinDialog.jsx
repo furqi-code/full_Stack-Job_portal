@@ -37,7 +37,7 @@ export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDi
         }, 2000);
       })
       .catch(() => {
-        setError("Invalid Email / Password");
+        setError("Invalid Email / Role / Password");
       });
   };
 
