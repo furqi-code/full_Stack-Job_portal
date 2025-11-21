@@ -3,11 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { jobContext } from "../../store/jobContext";
 import axios from "axios";
 
-export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDialog }) {
-  const { setIsloggedin } = useContext(jobContext)
+export function SigninDialog({
+  setSignupDialog,
+  setSigninDialog,
+  setforgotPassDialog,
+}) {
+  const { setIsloggedin, setUser_type } = useContext(jobContext);
   const emailRef = useRef();
   const passwordRef = useRef();
-  const [role, setRole] = useState(""); 
+  const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -24,18 +28,20 @@ export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDi
       data: {
         email,
         password,
-        role, 
+        role,
       },
-      withCredentials: true ,
+      withCredentials: true,
     })
       .then((res) => {
         setSuccess("Login successful. Redirecting to home page...");
+        setIsloggedin(true);
+        setUser_type(res.data.user_type); 
         setTimeout(() => {
           setSigninDialog(false);
-          setIsloggedin(true);
           navigate("/");
         }, 2000);
       })
+
       .catch(() => {
         setError("Invalid Email / Role / Password");
       });
@@ -86,9 +92,7 @@ export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDi
 
               {/* ROLE RADIO GROUP */}
               <div className="w-full max-w-sm min-w-[200px]">
-                <p className="block mb-2 text-sm text-slate-600">
-                  Select Role
-                </p>
+                <p className="block mb-2 text-sm text-slate-600">Select Role</p>
                 <div className="flex items-center gap-4">
                   <label className="inline-flex items-center cursor-pointer">
                     <input
@@ -127,9 +131,7 @@ export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDi
                       checked={role === "admin"}
                       onChange={(e) => setRole(e.target.value)}
                     />
-                    <span className="ml-2 text-sm text-slate-700">
-                      Admin
-                    </span>
+                    <span className="ml-2 text-sm text-slate-700">Admin</span>
                   </label>
                 </div>
               </div>
@@ -223,4 +225,3 @@ export function SigninDialog({ setSignupDialog, setSigninDialog, setforgotPassDi
     </>
   );
 }
-  

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { jobContext } from "../../store/jobContext";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
 
@@ -29,13 +30,14 @@ const filterData = [
 ];
 
 const Jobs = () => {
+  const { getSavedJobList, isLoggedin } = useContext(jobContext);
   const [clicked, setClicked] = useState("");
   const [cancelFilter, setCancelFilter] = useState(true);
   const [joblist, setJoblist] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log("joblist in job page\n", joblist);
+  // console.log("joblist in job page\n", joblist);
 
   useEffect(() => {
     setLoading(true);
@@ -57,6 +59,12 @@ const Jobs = () => {
 
     setClicked(filterBy || "");
   }, [cancelFilter, searchParams]);
+
+  useEffect(() => {
+    if (isLoggedin) {
+      getSavedJobList();
+    }
+  }, [isLoggedin]); 
 
   // on select Filter
   const handleChange = (value, filterType) => {

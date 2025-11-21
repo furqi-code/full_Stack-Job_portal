@@ -6,8 +6,10 @@ export const jobContext = createContext({
   saveJobList: [],
   isLoggedin: undefined,
   setIsloggedin: () => {},
+  setUser_type: () => {},
   getSavedJobList: () => {},
   handleSaveJobs: () => {},
+  deleteSavedJob: () => {},
   setSaveJobList: () => {},
 });
 
@@ -17,6 +19,12 @@ function reducer(state, action) {
       return {
         ...state,
         isLoggedin: action.payload.status,
+        user_type: action.payload.type,
+      };
+
+    case "userType":
+      return {
+        ...state,
         user_type: action.payload.type,
       };
 
@@ -65,6 +73,14 @@ export const JobContextProvider = ({ children }) => {
       payload: {
         status,
       },
+    });
+  };
+
+  // when user login
+  const setUser_type = (type) => {
+    dispatch({
+      type: "userType",
+      payload: { type },
     });
   };
 
@@ -118,14 +134,37 @@ export const JobContextProvider = ({ children }) => {
     }
   };
 
+  const deleteSavedJob = async (job_id) => {
+    if (state.isLoggedin) {
+      if (state.user_type !== "job_seeker") {
+        return toast.warning("Sorry, you aren't a valid user");
+      }
+      try {
+        const res = await axios({
+          method: "DELETE",
+          url: `http://localhost:1111/job-seeker/eliminateJob?job_id=${job_id}`,
+          withCredentials: true,
+        });
+        toast.success(res.data.message);
+        getSavedJobList();
+      } catch (err) {
+        toast.error("Sorry, couldn't delete this particular job");
+      }
+    } else {
+      toast.error("Kindly login to delete this job post");
+    }
+  };
+
   return (
     <jobContext.Provider
       value={{
         saveJobList: state.saveJobList,
         isLoggedin: state.isLoggedin,
         setIsloggedin,
+        setUser_type,
         getSavedJobList,
         handleSaveJobs,
+        deleteSavedJob,
         setSaveJobList,
       }}
     >

@@ -1,9 +1,8 @@
 import { useContext } from "react";
 import { jobContext } from "../../store/jobContext";
-import { ToastContainer, toast } from "react-toastify";
 
 const JobCard = ({ job }) => {
-  const { handleSaveJobs, saveJobList } = useContext(jobContext);
+  const { handleSaveJobs, deleteSavedJob, saveJobList } = useContext(jobContext);
   const alreadySaved = saveJobList?.some((saved) => saved.job_id === job.id);
 
   const getModeColor = (mode) => {
@@ -41,11 +40,14 @@ const JobCard = ({ job }) => {
           </span>
           <div className="flex items-center justify-between space-x-4">
             <button
-              className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-colors cursor-pointer"
-              onClick={async (e) => {
+              className={`p-2 rounded-full border-2 flex items-center justify-center transition-all duration-300 shadow-sm cursor-grab
+                ${alreadySaved 
+                  ? "bg-gradient-to-r from-emerald-400 to-green-600 border-transparent text-white shadow-lg" 
+                  : "bg-white border-gray-300 text-gray-600 hover:border-green-500 hover:text-green-600"}`}
+               onClick={async (e) => {
                 e.preventDefault();
                 if (!alreadySaved) await handleSaveJobs(job.id);
-                else toast.info(`${job.title} job post is already saved`);
+                else await deleteSavedJob(job.id);
               }}
             >
               <svg

@@ -47,4 +47,24 @@ router.post("/saveJob", async (req, res) => {
   }
 });
 
+router.delete("/eliminateJob", async (req, res) => {
+  try {
+    const { user_id, user_type } = req;
+    const job_id = req.query.job_id;
+    if(user_type === 'job_seeker'){
+      await executeQuery(
+        `delete from savedJobs where user_id = ? AND job_id = ?`,
+        [user_id, job_id]
+      );
+      res.status(200).send({ message: "This job post has been unsaved" });
+    }else{
+      return res.status(409).send({message: `This user isn't a job seeker`});
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: "Something went wrong",
+    });
+  }
+});
+
 module.exports = router

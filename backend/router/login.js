@@ -36,6 +36,7 @@ Router.post("/", async (req, res) => {
     res.cookie("token", token, { httpOnly: true }) ;
     return res.status(200).send({
       message: "User logged in",
+      user_type: dbUser.role,
     });
 
   } catch (err) {

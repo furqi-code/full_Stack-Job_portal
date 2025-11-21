@@ -21,7 +21,7 @@ CREATE TABLE profiles (
   address TEXT,
   job_role VARCHAR(255),
   about TEXT,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Skills table
@@ -35,8 +35,8 @@ CREATE TABLE user_skills (
   user_id INT NOT NULL,
   skill_id INT NOT NULL,
   PRIMARY KEY (user_id, skill_id),
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (skill_id) REFERENCES skills(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 );
 
 -- Jobs table
@@ -56,7 +56,7 @@ CREATE TABLE jobs (
   companyLogo TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   expires_at TIMESTAMP,
-  FOREIGN KEY (employer_id) REFERENCES users(id)
+  FOREIGN KEY (employer_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Applications table
@@ -67,11 +67,20 @@ CREATE TABLE applications (
   resume_url VARCHAR(255) NOT NULL,
   status ENUM('pending', 'reviewing', 'shortlisted', 'rejected') NOT NULL,
   applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (job_id) REFERENCES jobs(id),
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- This job posting will be done by the employer, but here I am inserting it all to test the UI of the job page
+-- Saved table
+CREATE TABLE savedJobs (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  job_id INT NOT NULL,
+  saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 INSERT INTO jobs (
   employer_id, title, description, company, type, work_mode, location,
   experience_min, experience_max, salary_min, salary_max, companyLogo, created_at, expires_at
@@ -103,8 +112,12 @@ select * from profiles;
 select * from skills;
 select * from user_skills;
 select * from jobs;
+select * from savedJobs;
 select * from applications;
 
+drop table users;
 drop table jobs;
+drop table savedJobs;
+
 
 drop database job_board;
