@@ -8,16 +8,11 @@ const JobDetail = () => {
   const { handleSaveJobs, deleteSavedJob, saveJobList } = useContext(jobContext);
   const [jobSearch, setJob] = useState(null);
   const [isApplied, setisApplied] = useState(false);
+  const [alreadySaved, setAlreadySaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { jobId } = useParams();
   console.log("job id - ", jobId);
-
-  let alreadySaved;
-  if(jobSearch){
-    alreadySaved = saveJobList.find((saved) => saved.job_id === jobSearch.id);
-  }
-  console.log("savejoblist in jobdetail page", saveJobList)
 
   useEffect(() => {
     setLoading(true);
@@ -31,6 +26,16 @@ const JobDetail = () => {
         setLoading(false);
       });
   }, []);
+
+  // this solves concurrent rendering after logout
+  useEffect(() => {
+    if (jobSearch) {
+      const isSaved = saveJobList.some((saved) => saved.job_id === jobSearch.id);
+      setAlreadySaved(isSaved);
+    } else {
+      setAlreadySaved(false); // reset if jobSearch is not loaded yet
+    }
+  }, [saveJobList, jobSearch]); 
 
   const fallBack = {
     title: "ABC",
