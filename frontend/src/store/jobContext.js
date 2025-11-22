@@ -49,7 +49,7 @@ export const JobContextProvider = ({ children }) => {
   console.log("isLoggedin ? ", state.isLoggedin);
   console.log("user type ? ", state.user_type);
 
-  // to set the isLoggedin state
+  // to set the isLoggedin state mainly
   useEffect(() => {
     axios({
       method: "GET",
@@ -76,7 +76,7 @@ export const JobContextProvider = ({ children }) => {
     });
   };
 
-  // when user login
+  // when a user login
   const setUser_type = (type) => {
     dispatch({
       type: "userType",

@@ -1,14 +1,23 @@
-import { useState, useEffect } from "react";
+import { jobContext } from "../../store/jobContext";
+import { useState, useEffect, useContext } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router";
 import axios from "axios";
 
 const JobDetail = () => {
+  const { handleSaveJobs, deleteSavedJob, saveJobList } = useContext(jobContext);
   const [jobSearch, setJob] = useState(null);
   const [isApplied, setisApplied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { jobId } = useParams();
   console.log("job id - ", jobId);
+
+  let alreadySaved;
+  if(jobSearch){
+    alreadySaved = saveJobList.find((saved) => saved.job_id === jobSearch.id);
+  }
+  console.log("savejoblist in jobdetail page", saveJobList)
 
   useEffect(() => {
     setLoading(true);
@@ -34,7 +43,7 @@ const JobDetail = () => {
     salary_max: 0,
     experience_min: 0,
     experience_max: 0,
-    applications: [],
+    // applications: [],
     created_at: "",
   };
   const job = jobSearch || fallBack;
@@ -75,90 +84,124 @@ const JobDetail = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto my-20 p-8 bg-white rounded-lg shadow-lg">
-      <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
-        <div>
-          {/* Company logo and name */}
-          <div className="flex items-center gap-4 mb-4">
-            {job.companyLogo && (
-              <img
-                src={job.companyLogo}
-                alt={`${job.company} logo`}
-                className="w-16 h-16 object-contain rounded-lg"
-              />
-            )}
-            <h1 className="text-3xl font-bold text-gray-900">
-              {job.company}
-            </h1>
+    <>
+      <div className="max-w-4xl mx-auto my-20 p-8 bg-white rounded-lg shadow-lg">
+        <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
+          <div>
+            {/* Company logo and name */}
+            <div className="flex items-center gap-4 mb-4">
+              {job.companyLogo && (
+                <img
+                  src={job.companyLogo}
+                  alt={`${job.company} logo`}
+                  className="w-16 h-16 object-contain rounded-lg"
+                />
+              )}
+              <h1 className="text-3xl font-bold text-gray-900">
+                {job.company}
+              </h1>
+            </div>
+
+            <h2 className="text-2xl font-semibold text-gray-900">
+              {job.title}
+            </h2>
+            <div className="mt-2 flex flex-wrap gap-4">
+              <span
+                className={`inline-block ${typeColor} rounded-full px-3 py-1 text-sm font-semibold`}
+              >
+                {job.type}
+              </span>
+              <span
+                className={`inline-block ${modeColor} rounded-full px-3 py-1 text-sm font-semibold`}
+              >
+                {job.work_mode}
+              </span>
+              <span className="inline-block bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold">
+                {job.location}
+              </span>
+            </div>
           </div>
 
-          <h2 className="text-2xl font-semibold text-gray-900">{job.title}</h2>
-          <div className="mt-2 flex flex-wrap gap-4">
-            <span
-              className={`inline-block ${typeColor} rounded-full px-3 py-1 text-sm font-semibold`}
+          <div className="flex items-center justify-between space-x-4">
+            <button
+              className={`p-2 rounded-full border-2 flex items-center justify-center transition-all duration-300 shadow-sm cursor-grab
+                ${
+                  alreadySaved
+                    ? "bg-gradient-to-r from-emerald-400 to-green-600 border-transparent text-white shadow-lg"
+                    : "bg-white border-gray-300 text-gray-600 hover:border-green-500 hover:text-green-600"
+                }`}
+              onClick={async () => {
+                if (!alreadySaved) await handleSaveJobs(job.id);
+                else await deleteSavedJob(job.id);
+              }}
             >
-              {job.type}
-            </span>
-            <span
-              className={`inline-block ${modeColor} rounded-full px-3 py-1 text-sm font-semibold`}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 5v14l7-7 7 7V5a2 2 0 00-2-2H7a2 2 0 00-2 2z"
+                />
+              </svg>
+            </button>
+            <button
+              disabled={isApplied}
+              className={`rounded-lg px-6 py-2 text-white font-bold transition-colors duration-300 ${
+                isApplied
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+              }`}
             >
-              {job.work_mode}
-            </span>
-            <span className="inline-block bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold">
-              {job.location}
-            </span>
+              {isApplied ? "Already Applied" : "Apply Now"}
+            </button>
           </div>
         </div>
 
-        <button
-          disabled={isApplied}
-          className={`rounded-lg px-6 py-2 text-white font-bold transition-colors duration-300 ${
-            isApplied
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-          }`}
-        >
-          {isApplied ? "Already Applied" : "Apply Now"}
-        </button>
+        {/* Job Details */}
+        <section>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 border-b border-gray-300 pb-2">
+            Job Details
+          </h2>
+          <div className="space-y-4 text-gray-700">
+            <div>
+              <h3 className="font-bold">Role</h3>
+              <p className="pl-4">{job.title}</p>
+            </div>
+            <div>
+              <h3 className="font-bold">Description</h3>
+              <p className="pl-4 leading-relaxed">{job.description}</p>
+            </div>
+            <div>
+              <h3 className="font-bold">Work Mode</h3>
+              <p className="pl-4">{job.work_mode}</p>
+            </div>
+            <div>
+              <h3 className="font-bold">Experience Required</h3>
+              <p className="pl-4">
+                {job.experience_min} - {job.experience_max} years
+              </p>
+            </div>
+            <div>
+              <h3 className="font-bold">Salary Range</h3>
+              <p className="pl-4">
+                {job.salary_min} - {job.salary_max} LPA
+              </p>
+            </div>
+            <div>
+              <h3 className="font-bold">Posted Date</h3>
+              <p className="pl-4">{job.created_at.split("T")[0]}</p>
+            </div>
+          </div>
+        </section>
       </div>
-
-      {/* Job Details */}
-      <section>
-        <h2 className="text-xl font-bold text-gray-800 mb-4 border-b border-gray-300 pb-2">
-          Job Details
-        </h2>
-        <div className="space-y-4 text-gray-700">
-          <div>
-            <h3 className="font-bold">Role</h3>
-            <p className="pl-4">{job.title}</p>
-          </div>
-          <div>
-            <h3 className="font-bold">Description</h3>
-            <p className="pl-4 leading-relaxed">{job.description}</p>
-          </div>
-          <div>
-            <h3 className="font-bold">Work Mode</h3>
-            <p className="pl-4">{job.work_mode}</p>
-          </div>
-          <div>
-            <h3 className="font-bold">Experience Required</h3>
-            <p className="pl-4">
-              {job.experience_min} - {job.experience_max} years
-            </p>
-          </div>
-          <div>
-            <h3 className="font-bold">Salary Range</h3>
-            <p className="pl-4">
-              {job.salary_min} - {job.salary_max} LPA
-            </p>
-          </div>
-          <div>
-            <h3 className="font-bold">Posted Date</h3>
-            <p className="pl-4">{job.created_at.split("T")[0]}</p>
-          </div>
-        </div>
-      </section>
-    </div>
+      <ToastContainer position="bottom-right"/>
+    </>
   );
 };
 

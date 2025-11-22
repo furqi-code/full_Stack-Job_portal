@@ -4,7 +4,10 @@ const { executeQuery } = require("../mySqldb/Query");
 
 router.get("/savedJob", async (req, res) => {
   try {
-    const user_id = req.user_id;
+    const { user_id, user_type } = req;
+    if (user_type !== 'job_seeker') {
+      return res.status(403).send({ message: "Access denied, only job seekers can view saved jobs" });
+    }
     const savedJobs = await executeQuery(`select * from savedJobs where user_id = ?`, [user_id]);
     res.status(200).send({data: savedJobs});
   } catch (err) {
@@ -37,7 +40,7 @@ router.post("/saveJob", async (req, res) => {
         );
         return res.status(200).send({ message: "Job saved successfully" });
     }else{
-        return res.status(409).send({message: `This user isn't a job seeker`});
+        return res.status(403).send({message: `This user isn't a job seeker`});
     }
   } catch (err) {
     console.log("Error saving jobs", err);
@@ -58,7 +61,7 @@ router.delete("/eliminateJob", async (req, res) => {
       );
       res.status(200).send({ message: "This job post has been unsaved" });
     }else{
-      return res.status(409).send({message: `This user isn't a job seeker`});
+      return res.status(403).send({message: `This user isn't a job seeker`});
     }
   } catch (err) {
     res.status(500).send({
