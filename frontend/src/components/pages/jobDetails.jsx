@@ -27,7 +27,6 @@ const JobDetail = () => {
       });
   }, []);
 
-  // this solves concurrent rendering after logout
   useEffect(() => {
     if (jobSearch) {
       const isSaved = saveJobList.some((saved) => saved.job_id === jobSearch.id);

@@ -97,7 +97,7 @@ export const JobContextProvider = ({ children }) => {
   const getSavedJobList = () => {
     axios({
       method: "GET",
-      url: "http://localhost:1111/job-seeker/savedJob",
+      url: "http://localhost:1111/account/job-seeker/savedJob",
       withCredentials: true,
     })
       .then((res) => {
@@ -121,7 +121,7 @@ export const JobContextProvider = ({ children }) => {
       try {
         const res = await axios({
           method: "POST",
-          url: `http://localhost:1111/job-seeker/saveJob?job_id=${job_id}`,
+          url: `http://localhost:1111/account/job-seeker/saveJob?job_id=${job_id}`,
           withCredentials: true,
         });
         toast.success(res.data.message);
@@ -142,7 +142,7 @@ export const JobContextProvider = ({ children }) => {
       try {
         const res = await axios({
           method: "DELETE",
-          url: `http://localhost:1111/job-seeker/eliminateJob?job_id=${job_id}`,
+          url: `http://localhost:1111/account/job-seeker/eliminateJob?job_id=${job_id}`,
           withCredentials: true,
         });
         toast.success(res.data.message);

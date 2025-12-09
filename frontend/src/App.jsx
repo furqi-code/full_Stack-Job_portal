@@ -5,6 +5,11 @@ import NotFound from "./components/pages/notFoundpage";
 import HomeDesign from "./components/pages/homeDesign";
 import Jobs from "./components/pages/jobs";
 import JobDetail from "./components/pages/jobDetails";
+import Profile from "./components/account/profile";
+import AppliedJobs from "./components/account/appliedJobs";
+import SavedJobs from "./components/account/savedJobs";
+import ChangePassword from "./components/account/changePassword";
+
 
 const routes = createBrowserRouter([
   {
@@ -24,6 +29,22 @@ const routes = createBrowserRouter([
         path: "Jobs/:jobId",
         element: <JobDetail />,
       },
+      {
+        path: "/account/profile",
+        element: <Profile />,
+      },
+      {
+        path: "/account/appliedJobs",
+        element: <AppliedJobs />,
+      },
+      {
+        path: "/account/savedJobs",
+        element: <SavedJobs />,
+      },
+      {
+        path: "/account/change-password",
+        element: <ChangePassword />,
+      },  
     ],
   },
 ]);

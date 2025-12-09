@@ -6,7 +6,8 @@ router.get("/savedJob", async (req, res) => {
   try {
     const { user_id, user_type } = req;
     if (user_type !== 'job_seeker') {
-      return res.status(403).send({ message: "Access denied, only job seekers can view saved jobs" });
+      // return res.status(403).send({ message: "Access denied, only job seekers can view saved jobs" });
+      res.status(200).send({data: []});
     }
     const savedJobs = await executeQuery(`select * from savedJobs where user_id = ?`, [user_id]);
     res.status(200).send({data: savedJobs});

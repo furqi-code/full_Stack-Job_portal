@@ -34,7 +34,7 @@ app.use('/logout', logout);
 app.use("/forgotPassword", forgot);
 app.use('/auth/status', isLoggedin)  // to set the state in JobContextProvider
 app.use('/joblist', jobs);
-app.use('/job-seeker', job_seeker);
+app.use('/account/job-seeker', job_seeker);
 
 
 app.listen(PORT, function () {

@@ -61,16 +61,22 @@ const Header = () => {
                     Home
                   </Link>
                 </li>
-                {["Jobs", "Profile"].map((item) => (
-                  <li key={item}>
+                  <li>
                     <Link
-                      to={`/${item}`}
+                      to='/Jobs'
                       className="nav-link text-gray-700 hover:text-blue-600 font-medium whitespace-nowrap"
                     >
-                      {item}
+                      Jobs
                     </Link>
                   </li>
-                ))}
+                <li>
+                  <Link
+                    to="/account/profile"
+                    className="nav-link text-gray-700 hover:text-blue-600 font-medium whitespace-nowrap"
+                  >
+                    Profile
+                  </Link>
+                </li>
               </ul>
             </nav>
 
