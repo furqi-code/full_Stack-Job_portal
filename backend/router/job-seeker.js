@@ -1,6 +1,41 @@
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
+const SALTROUND = parseInt(process.env.SALTROUND) || 10;  
 const { executeQuery } = require("../mySqldb/Query");
+
+router.patch("/change-password", async (req, res) => {
+  try {
+    const user_id = req.user_id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).send({ message: "Provide necessary details" });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).send({ message: "new/confirm Passwords do not match" });
+    }
+    const [user] = await executeQuery(`SELECT * FROM users WHERE id = ?`, [user_id]);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).send({ message: "Incorrect current password" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, SALTROUND);
+    await executeQuery(`UPDATE users SET password = ? WHERE id = ?`, [
+      hashedPassword,
+      user_id,
+    ]);
+    return res.status(200).send({ message: "Password changed successfully" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({
+      message: err.message ? err.message : "Something went wrong",
+    });
+  }
+});
 
 router.get("/savedJob", async (req, res) => {
   try {

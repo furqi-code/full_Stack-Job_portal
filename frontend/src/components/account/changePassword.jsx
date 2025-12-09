@@ -25,15 +25,13 @@ const ChangePassword = () => {
     }
     axios({
       method: "PATCH",
-      url: "http://localhost:1111/account/change-password",
-      headers: {
-        Authorization: localStorage.getItem("userDetail"),
-      },
+      url: "http://localhost:1111/account/job_seeker/change-password",
       data: {
         currentPassword,
         newPassword,
         confirmPassword,
       },
+      withCredentials: true,
     })
       .then((res) => {
         setSuccess("Password changed successfully");
