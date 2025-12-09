@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router";
-import Sidebar from "./sidebar";
 import { jobContext } from "../../store/jobContext";
+import { ToastContainer, toast } from "react-toastify";
 import JobCard from "../shared/jobCard";
+import Sidebar from "./sidebar";
 
 const SavedJobs = () => {
   const { isLoggedin, saveJobList, getSavedJobList } = useContext(jobContext);
@@ -10,9 +11,11 @@ const SavedJobs = () => {
   const [profilePic, setProfilePic] = useState("");
   const [username, setUsername] = useState("");
 
+  // manually reload pe this component renders before isloggedin state changes thats why if() not working
+  // so we had to use dependancy to re-run the useEffect
   useEffect(() => {
     if (isLoggedin) getSavedJobList();
-  }, []); 
+  }, [isLoggedin]); 
 
   return (
     <>
@@ -82,6 +85,7 @@ const SavedJobs = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="bottom-left" />
     </>
   );
 };

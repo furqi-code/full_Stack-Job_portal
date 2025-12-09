@@ -44,7 +44,13 @@ router.get("/savedJob", async (req, res) => {
       // return res.status(403).send({ message: "Access denied, only job seekers can view saved jobs" });
       res.status(200).send({data: []});
     }
-    const savedJobs = await executeQuery(`select * from savedJobs where user_id = ?`, [user_id]);
+    const savedJobs = await executeQuery(
+      `SELECT j.* FROM savedJobs AS s INNER JOIN jobs AS j 
+      ON s.job_id = j.id
+      WHERE s.user_id = ?`,
+      [user_id]
+    );
+
     res.status(200).send({data: savedJobs});
   } catch (err) {
     console.log("Error fetching savedJobList", err);

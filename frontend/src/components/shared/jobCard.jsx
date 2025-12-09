@@ -3,7 +3,7 @@ import { jobContext } from "../../store/jobContext";
 
 const JobCard = ({ job }) => {
   const { handleSaveJobs, deleteSavedJob, saveJobList } = useContext(jobContext);
-  const alreadySaved = saveJobList?.some((saved) => saved.job_id === job.id);
+  const alreadySaved = saveJobList?.some((saved) => saved.id === job.id);
 
   const getModeColor = (mode) => {
     if (mode === "Hybrid") return "bg-yellow-100 text-yellow-700";
