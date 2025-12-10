@@ -18,15 +18,16 @@ const filterData = [
       "Backend Developer",
       "Network Engineer",
       "DevOps Engineer",
-      "Sales Executive",
+      "Cloud Engineer",
       "AI Researcher",
       "Data Analyst",
+      "Sales Executive",
     ],
   },
   {
     filterType: "Salary",
     array: ["4L to 6L", "7L to 11L", "12L to 15L", "16L to 45L", "45LPA +"],
-  },
+  },  
 ];
 
 const Jobs = () => {

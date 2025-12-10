@@ -7,10 +7,11 @@ const { executeQuery } = require("../mySqldb/Query");
 Router.post("/", async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
+    const profile_pic = "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI="
     if (!username || !email || !password || !role) {
       return res.status(409).send("Incomplete credentials");
     }
-    const existingUser = await executeQuery(
+    const existingUser = await executeQuery(  
       `SELECT * FROM users WHERE email = ? OR username = ?`,
       [email, username]
     );
@@ -21,6 +22,12 @@ Router.post("/", async (req, res) => {
     const insertedUser = await executeQuery(
       `INSERT INTO users(username, email, password, role) VALUES (?, ?, ?, ?)`,
       [username, email, hashedPassword, role]
+    );
+    
+    // now insert in profile table
+    await executeQuery(
+      `INSERT INTO profiles (user_id, name, profile_pic) VALUES (?, ?, ?)`,
+      [insertedUser.insertId, username, profile_pic]  
     );
 
     if (insertedUser.insertId > 0) {

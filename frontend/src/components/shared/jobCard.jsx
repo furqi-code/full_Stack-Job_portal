@@ -65,7 +65,7 @@ const JobCard = ({ job }) => {
                 />
               </svg>
             </button>
-            <button className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-grab">
+            <button className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-black transition-colors cursor-grab">
               Apply
             </button>
           </div>

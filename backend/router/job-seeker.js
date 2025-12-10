@@ -4,6 +4,58 @@ const bcrypt = require("bcryptjs");
 const SALTROUND = parseInt(process.env.SALTROUND) || 10;  
 const { executeQuery } = require("../mySqldb/Query");
 
+router.get("/profile", async (req, res) => {
+  try {
+    const user_id = req.user_id;
+    const [dbUser] = await executeQuery(
+      `SELECT * FROM profiles WHERE user_id = ?`,
+      [user_id]
+    );
+    res.status(200).send({
+      info: dbUser,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: "Something went wrong",
+    });
+  }
+});
+
+router.patch("/profile", async (req, res) => {
+  try {
+    const user_id = req.user_id; 
+    const { name, phone, address, gender, job_role, about, profile_pic } = req.body;
+    if (!name || !gender) {
+      return res.status(400).send({ message: "Name and gender are required" });
+    }
+    const [dbUser] = await executeQuery(`SELECT * FROM users WHERE id = ?`, [user_id]);
+    if (!dbUser) {
+      return res.status(401).send({ message: "User not found" });
+    }
+
+    const result = await executeQuery(
+      `UPDATE profiles 
+       SET name = ?, phone = ?, address = ?, gender = ?, job_role = ?, about = ?, profile_pic = ?
+       WHERE user_id = ?`,
+      [name, phone, address, gender, job_role, about, profile_pic, user_id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).send({ message: "Profile not found" });
+    }
+    res.status(200).send({
+      message: "User profile updated successfully",
+      info: { name, phone, address, gender, job_role, about, profile_pic }
+    });
+  } catch (err) {
+    console.error("Profile update error:", err);
+    res.status(500).send({
+      message: "Something went wrong",
+      error: err.message
+    });
+  }
+});
+
+
 router.patch("/change-password", async (req, res) => {
   try {
     const user_id = req.user_id;

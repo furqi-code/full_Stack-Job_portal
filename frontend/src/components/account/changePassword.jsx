@@ -10,7 +10,7 @@ const ChangePassword = () => {
   const [success, setSuccess] = useState("");
   // used in sidebar
   const [profilePic, setProfilePic] = useState(""); 
-  const [username, setUsername] = useState("");   
+  const [name, setName] = useState("");   
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -51,9 +51,9 @@ const ChangePassword = () => {
           <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar */}
             <Sidebar
-              username={username}
+              name={name}
               profilePic={profilePic}
-              setUsername={setUsername}
+              setName={setName}
               setProfilePic={setProfilePic}
             />
 

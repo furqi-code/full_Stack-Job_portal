@@ -9,13 +9,13 @@ const SavedJobs = () => {
   const { isLoggedin, saveJobList, getSavedJobList } = useContext(jobContext);
   // used in sidebar
   const [profilePic, setProfilePic] = useState("");
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
 
   // manually reload pe this component renders before isloggedin state changes thats why if() not working
   // so we had to use dependancy to re-run the useEffect
   useEffect(() => {
     if (isLoggedin) getSavedJobList();
-  }, [isLoggedin]); 
+  }, [isLoggedin]);
 
   return (
     <>
@@ -24,9 +24,9 @@ const SavedJobs = () => {
           <div className="flex flex-col md:flex-row gap-10">
             {/* Sidebar */}
             <Sidebar
-              username={username}
+              name={name}
               profilePic={profilePic}
-              setUsername={setUsername}
+              setName={setName}
               setProfilePic={setProfilePic}
             />
 
@@ -34,48 +34,59 @@ const SavedJobs = () => {
             <main className="flex-1 flex items-center justify-center  min-h-[60vh]">
               <div className="space-y-8">
                 <section className="bg-white shadow-md rounded-lg p-8">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">
-                    Saved Jobs
-                  </h3>
                   {saveJobList.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                      {saveJobList.map((job) => (
-                        <Link to={`/jobs/${job.id}`} key={job.id}>
-                          <JobCard job={job} />
-                        </Link>
-                      ))}
-                    </div>
+                    <>
+                      <h3 className="text-2xl font-semibold text-gray-900 mb-8">
+                        Saved Jobs
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        {saveJobList.map((job) => (
+                          <Link to={`/jobs/${job.id}`} key={job.id}>
+                            <JobCard job={job} />
+                          </Link>
+                        ))}
+                      </div>
+                    </>
                   ) : (
-                    <div className="flex items-center justify-center min-h-[300px]">
-                      <div className="emptyCart-base-mainContainer flex items-center justify-center">
-                        <div className="emptyCart-base-subContainer flex flex-col items-center text-center">
-                          <div
-                            className="emptyCart-base-emptyBagImage mb-6"
-                            style={{ height: "165px", width: "146px" }}
+                    <div className="flex flex-col items-center justify-center min-h-[400px] py-14 px-8">
+                      {/* Professional Card */}
+                      <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-12 max-w-lg w-full">
+                        {/* Professional Bookmark Icon */}
+                        <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center mb-8 border border-gray-200">
+                          <svg
+                            className="w-12 h-12 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            <picture
-                              className="image-base-imgResponsive"
-                              style={{ width: "100%" }}
-                            >
-                              <source
-                                srcSet="https://constant.myntassets.com/checkout/assets/img/empty-bag.webp"
-                                type="image/webp"
-                              />
-                              <img
-                                src="https://constant.myntassets.com/checkout/assets/img/empty-bag.png"
-                                alt="empty bag"
-                                loading="eager"
-                                style={{ height: "165px", width: "146px" }}
-                              />
-                            </picture>
-                          </div>
-                          <div className="emptyCart-base-emptyText mb-1">
-                            Hey, it feels so light!
-                          </div>
-                          <div className="emptyCart-base-emptyDesc mb-6">
-                            There is nothing in your bag. Let's add some items.
-                          </div>
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1}
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-4L4 7m8 4v10M4 7v10l8 4"
+                            />
+                          </svg>
                         </div>
+                        <div className="text-center space-y-2 mb-8">
+                          <h3 className="text-3xl font-bold text-gray-900">
+                            No Saved Jobs
+                          </h3>
+                        </div>
+
+                        <p className="text-gray-500 text-base leading-relaxed mb-10 text-center max-w-md mx-auto">
+                          Save jobs you like from the job listings to keep track
+                          of opportunities that interest you. They'll appear
+                          here for quick access anytime.
+                        </p>
+                        <Link
+                          to="/jobs"
+                          className="inline-flex items-center px-8 py-3 font-semibold text-base bg-gray-900 text-white rounded-lg hover:bg-black transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-gray-200"
+                        >
+                          Browse All Jobs
+                        </Link>
+                        <p className="text-xs text-gray-400 mt-6 text-center">
+                          Tip: Use the bookmark icon on job cards to save
+                        </p>
                       </div>
                     </div>
                   )}

@@ -19,8 +19,10 @@ CREATE TABLE profiles (
   name VARCHAR(255) NOT NULL,
   phone VARCHAR(20),	
   address TEXT,
+  gender ENUM('Male', 'Female', 'Other') NOT NULL,
   job_role VARCHAR(255),
   about TEXT,
+  profile_pic TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

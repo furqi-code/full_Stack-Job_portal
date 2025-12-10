@@ -7,7 +7,7 @@ const AppliedJobs = () => {
   const [appliedJobs, setAppliedJobs] = useState([]);
   // used in sidebar
   const [profilePic, setProfilePic] = useState("");
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
 
   // useEffect(() => {
   //   axios({
@@ -32,9 +32,9 @@ const AppliedJobs = () => {
           <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar */}
             <Sidebar
-              username={username}
+              name={name}
               profilePic={profilePic}
-              setUsername={setUsername}
+              setName={setName}
               setProfilePic={setProfilePic}
             />
 

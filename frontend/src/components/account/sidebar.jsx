@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router";
 import { jobContext } from "../../store/jobContext";
 import axios from "axios";
 
-const Sidebar = ({username, profilePic, setUsername, setProfilePic}) => {
+const Sidebar = ({name, profilePic, setName, setProfilePic}) => {
   const { setIsloggedin, setSaveJobList } = useContext(jobContext);
   const navigate = useNavigate()
 
@@ -40,23 +40,21 @@ const Sidebar = ({username, profilePic, setUsername, setProfilePic}) => {
     },
   ];
 
-  // useEffect(() => {
-  //   axios({
-  //     method: "GET",
-  //     url: "http://localhost:1111/account/profile",
-  //     headers: {
-  //       Authorization: localStorage.getItem("userDetail"),
-  //     },
-  //   })
-  //     .then((res) => {
-  //       const { username, profile_pic } = res.data.info;
-  //       setUsername(username);
-  //       setProfilePic(profile_pic);
-  //     })
-  //     .catch((err) => {
-  //       console.log("Couldn't fetch user profile", err);
-  //     });
-  // }, []);
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/account/job_seeker/profile",
+      withCredentials: true
+    })
+      .then((res) => {
+        const { name, profile_pic } = res.data.info;
+        setName(name);
+        setProfilePic(profile_pic);
+      })
+      .catch((err) => {
+        console.log("Couldn't fetch user profile", err);
+      });
+  }, []);
 
   const logout = () => {
     axios({
@@ -80,7 +78,7 @@ const Sidebar = ({username, profilePic, setUsername, setProfilePic}) => {
             className="w-12 h-12 rounded-full"
           />
           <div>
-            <h2 className="text-lg font-medium text-gray-900">{username}</h2>
+            <h2 className="text-lg font-medium text-gray-900">{name}</h2>
             <p className="text-sm text-gray-500">View Profile</p>
           </div>
         </div>
