@@ -175,9 +175,6 @@ const Profile = () => {
                       />
                     </label>
                   </div>
-                  <p className="mt-4 text-sm text-gray-500 text-center">
-                    Click camera icon to change photo
-                  </p>
                 </div>
 
                 {/* Form Fields */}

@@ -2,6 +2,7 @@ import { jobContext } from "../../store/jobContext";
 import { useState, useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router";
+import Example from '../shared/applyModal';
 import axios from "axios";
 
 const JobDetail = () => {
@@ -9,6 +10,7 @@ const JobDetail = () => {
   const [jobSearch, setJob] = useState(null);
   const [isApplied, setisApplied] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { jobId } = useParams();
@@ -155,17 +157,20 @@ const JobDetail = () => {
               </svg>
             </button>
             <button
+            onClick={() => setOpen(true)}
               disabled={isApplied}
               className={`rounded-lg px-6 py-2 text-white font-bold transition-colors duration-300 ${
                 isApplied
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-purple-700 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-black transition-colors cursor-grab focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
               }`}
             >
               {isApplied ? "Already Applied" : "Apply Now"}
             </button>
           </div>
         </div>
+
+        {open ? <><Example setOpen={setOpen} open={open} /></> : ""}
 
         {/* Job Details */}
         <section>
