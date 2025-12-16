@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon, CameraIcon } from "@heroicons/react/24/outline";
 import { jobContext } from "../../store/jobContext";
 import Sidebar from "./sidebar";
 import axios from "axios";
+
+// ISSUE: Uncontrolled inputs fail to populate on initial load despite successful API fetch.
+// works on navigation back from any tab due to fresh component mount/clear refs.
 
 const Profile = () => {
   const { isLoggedin } = useContext(jobContext);
@@ -12,7 +15,7 @@ const Profile = () => {
   const genderRef = useRef(null);
   const jobRoleRef = useRef(null);
   const aboutRef = useRef(null);
-  const profile_picRef = useRef(null);
+  const imageFileRef = useRef(null);
 
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
@@ -26,7 +29,7 @@ const Profile = () => {
     axios({
       method: "GET",
       url: "http://localhost:1111/account/job_seeker/profile",
-      withCredentials: true
+      withCredentials: true,
     })
       .then((res) => {
         const { name, phone, address, gender, job_role, about, profile_pic, created_at } = res.data.info;
@@ -36,7 +39,6 @@ const Profile = () => {
         if (genderRef.current) genderRef.current.value = gender || "";
         if (jobRoleRef.current) jobRoleRef.current.value = job_role || "";
         if (aboutRef.current) aboutRef.current.value = about || "";
-        if (profile_picRef.current) profile_picRef.current.value = profile_pic || "";
         setDate(created_at);
         setProfilePic(profile_pic);
         setName(name);
@@ -52,30 +54,28 @@ const Profile = () => {
     setError("");
     setSuccess("");
 
-    const name = nameRef.current.value;
-    const phone = phoneRef.current.value;
-    const address = addressRef.current.value;
-    const gender = genderRef.current.value;
-    const job_role = jobRoleRef.current.value;
-    const about = aboutRef.current.value;
-    const profile_pic = profile_picRef.current.value;
+    const formData = new FormData();
+    formData.append("name", nameRef.current.value);
+    formData.append("phone", phoneRef.current.value);
+    formData.append("address", addressRef.current.value);
+    formData.append("gender", genderRef.current.value);
+    formData.append("job_role", jobRoleRef.current.value);
+    formData.append("about", aboutRef.current.value);
+    if (imageFileRef.current.files.length > 0)
+      formData.append("profile_pic", imageFileRef.current.files[0]);
 
     axios({
       method: "PATCH",
       url: "http://localhost:1111/account/job_seeker/profile",
-      data: {
-        name,
-        phone,
-        address,
-        gender,
-        job_role,
-        about,
-        profile_pic,
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-      withCredentials: true
+      withCredentials: true,
+      data: formData,
     })
       .then((res) => {
         console.log("Profile updated", res.data.message);
+        imageFileRef.current.value = "";
         setSuccess("Profile updated successfully.");
         setTimeout(() => {
           setSuccess("");
@@ -89,242 +89,254 @@ const Profile = () => {
 
   if (!isLoggedin) {
     return (
-      <div className="flex items-center justify-center px-6 py-8 min-h-[calc(100vh-10rem)] max-w-7xl mx-auto">
-        <h1>Kindly login to see your account</h1>
+      <div className="flex items-center justify-center px-6 py-12 min-h-[calc(100vh-10rem)] max-w-7xl mx-auto bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Please log in
+          </h1>
+          <p className="text-gray-600">
+            Access your account to view and edit profile information.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="py-8">
-        <div className="container mx-auto px-4 max-w-[1440px]">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Sidebar - Updated props */}
-            <Sidebar
-              name={name}
-              profilePic={profilePic}
-              setName={setName}
-              setProfilePic={setProfilePic}
-            />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar */}
+          <Sidebar
+            name={name}
+            profilePic={profilePic}
+            setName={setName}
+            setProfilePic={setProfilePic}
+          />
 
-            {/* Main Content */}
-            <main className="flex-1">
-              <div className="space-y-6">
-                <div className="bg-white shadow rounded-lg p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Profile Information
-                  </h3>
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="md:w-1/3">
-                      <div className="aspect-square w-full max-w-[200px] mx-auto relative">
-                        <img
-                          src={profilePic}
-                          alt="Profile pic"
-                          className="rounded-full w-full h-full object-cover"
-                        />
-                        <button className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 cursor-pointer">
-                          <Cog6ToothIcon className="w-5 h-5 text-gray-600" />
-                        </button>
-                      </div>
+          {/* Main Content */}
+          <main className="flex-1 space-y-8">
+            {/* Profile Information Card */}
+            <div className="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl border border-white/50 p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  Profile Information
+                </h2>
+                <div className="flex gap-3">
+                  {error && (
+                    <div className="px-4 py-2 bg-red-100 border border-red-400 text-red-700 rounded-xl text-sm font-medium animate-pulse">
+                      {error}
                     </div>
-                    <div className="md:w-2/3 space-y-4">
-                      <form onSubmit={handleSaveChanges} className="space-y-4">
-                        <div>
-                          <label
-                            htmlFor="name"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Name
-                          </label>
-                          <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            ref={nameRef}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-primary-color"
-                            placeholder="Enter your full name"
-                          />
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="phone"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Phone
-                          </label>
-                          <input
-                            id="phone"
-                            name="phone"
-                            type="tel"
-                            ref={phoneRef}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-primary-color"
-                            placeholder="+91 9876543210"
-                          />
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="address"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Address
-                          </label>
-                          <input
-                            id="address"
-                            name="address"
-                            type="text"
-                            ref={addressRef}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-primary-color"
-                            placeholder="City, State, Country"
-                          />
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="gender"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Gender
-                          </label>
-                          <select
-                            id="gender"
-                            name="gender"
-                            ref={genderRef}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-primary-color"
-                          >
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="job_role"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Job Role
-                          </label>
-                          <select
-                            id="job_role"
-                            name="job_role"
-                            ref={jobRoleRef}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-primary-color"
-                            defaultValue=""
-                          >
-                            <option value="" disabled>Select Job Role</option>
-                            <option value="Frontend Developer">Frontend Developer</option>
-                            <option value="Backend Developer">Backend Developer</option>
-                            <option value="Network Engineer">Network Engineer</option>
-                            <option value="DevOps Engineer">DevOps Engineer</option>
-                            <option value="Cloud Engineer">Cloud Engineer</option>
-                            <option value="Sales Executive">Sales Executive</option>
-                            <option value="AI Researcher">AI Researcher</option>
-                            <option value="Data Analyst">Data Analyst</option>
-                            {/* <option value="UX Designer">UX Designer</option>
-                            <option value="Marketing Specialist">Marketing Specialist</option>
-                            <option value="HR Manager">HR Manager</option>
-                            <option value="Data Scientist">Data Scientist</option>
-                            <option value="Mobile Developer">Mobile Developer</option>
-                            <option value="Cybersecurity Specialist">Cybersecurity Specialist</option> */}
-                          </select>
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="about"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            About
-                          </label>
-                          <textarea
-                            id="about"
-                            name="about"
-                            rows={3}
-                            ref={aboutRef}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-primary-color"
-                            placeholder="Write a few sentences about yourself"
-                          />
-                          <p className="mt-1 text-xs text-gray-500">
-                            Brief description for your profile
-                          </p>
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="profile_pic"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Profile Picture
-                          </label>
-                          <input
-                            type="url"
-                            id="profile_pic"
-                            name="profile_pic"
-                            ref={profile_picRef}
-                            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-primary-color"
-                            placeholder="Image URL"
-                          />
-                        </div>
-
-                        {error && (
-                          <p className="text-red-500 text-sm mt-2 font-semibold">
-                            {error}
-                          </p>
-                        )}
-                        {success && (
-                          <p className="text-green-500 text-sm mt-2 font-semibold">
-                            {success}
-                          </p>
-                        )}
-
-                        <div className="pt-4">
-                          <button
-                            type="submit"
-                            className="px-5 py-2 bg-green-600 text-white rounded-lg border-2 border-green-600 hover:border-transparent hover:bg-blue-400 transition duration-300 ease-in-out shadow-sm cursor-grab focus:outline-none"
-                          >
-                            Save Changes
-                          </button>
-                        </div>
-                      </form>
+                  )}
+                  {success && (
+                    <div className="px-4 py-2 bg-emerald-100 border border-emerald-400 text-emerald-700 rounded-xl text-sm font-medium">
+                      {success}
                     </div>
-                  </div>
-                </div>
-
-                <div className="bg-white shadow rounded-lg p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Account Statistics
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-500">Applied Jobs</p>
-                      <p className="text-2xl font-semibold text-gray-900">
-                        {totalAppliedJobs}
-                      </p>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-500">Saved Jobs</p>
-                      <p className="text-2xl font-semibold text-gray-900">
-                        {totalSaveJobs}
-                      </p>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-500">Joined</p>
-                      <p className="text-2xl font-semibold text-gray-900">
-                        {date ? date.split("T")[0] : ""}
-                      </p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
-            </main>
-          </div>
+
+              <form onSubmit={handleSaveChanges} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1 flex flex-col items-center">
+                  <div className="relative group">
+                    <div className="aspect-square w-48 h-48 rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50 bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+                      <img
+                        src={profilePic || "/api/placeholder/480/480"}
+                        alt="Profile picture"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+
+                    {/* Custom File Upload Button */}
+                    <label
+                      htmlFor="profile-pic"
+                      className="absolute -bottom-2 -right-2 bg-gradient-to-r from-emerald-500 to-teal-600 p-3 rounded-2xl shadow-2xl border-4 border-white/80 hover:from-emerald-600 hover:to-teal-700 hover:shadow-emerald-500/25 hover:scale-110 transition-all duration-300 cursor-pointer flex items-center justify-center w-14 h-14"
+                    >
+                      <CameraIcon className="w-6 h-6 text-white" />
+                      <input
+                        id="profile-pic"
+                        type="file"
+                        ref={imageFileRef}
+                        accept="image/*"
+                        className="sr-only"
+                      />
+                    </label>
+                  </div>
+                  <p className="mt-4 text-sm text-gray-500 text-center">
+                    Click camera icon to change photo
+                  </p>
+                </div>
+
+                {/* Form Fields */}
+                <div className="lg:col-span-2 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                      >
+                        Full Name
+                      </label>
+                      <input
+                        id="name"
+                        type="text"
+                        ref={nameRef}
+                        className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-lg placeholder-gray-400"
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="phone"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                      >
+                        Phone Number
+                      </label>
+                      <input
+                        id="phone"
+                        type="tel"
+                        ref={phoneRef}
+                        className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label
+                        htmlFor="gender"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                      >
+                        Gender
+                      </label>
+                      <select
+                        id="gender"
+                        ref={genderRef}
+                        className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="job_role"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                      >
+                        Job Role
+                      </label>
+                      <select
+                        id="job_role"
+                        ref={jobRoleRef}
+                        className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
+                      >
+                        <option value="">Select Job Role</option>
+                        <option value="Frontend Developer">Frontend Developer</option>
+                        <option value="Backend Developer">Backend Developer</option>
+                        <option value="Network Engineer">Network Engineer</option>
+                        <option value="DevOps Engineer">DevOps Engineer</option>
+                        <option value="Cloud Engineer">Cloud Engineer</option>
+                        <option value="Sales Executive">Sales Executive</option>
+                        <option value="AI Researcher">AI Researcher</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="address"
+                      className="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      Address
+                    </label>
+                    <input
+                      id="address"
+                      type="text"
+                      ref={addressRef}
+                      className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
+                      placeholder="City, State, Country"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="about"
+                      className="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      About
+                    </label>
+                    <textarea
+                      id="about"
+                      rows={4}
+                      ref={aboutRef}
+                      className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 resize-vertical placeholder-gray-400"
+                      placeholder="Tell us about yourself and your professional background..."
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Maximum 400 characters recommended  
+                    </p>
+                  </div>
+
+                  <div className="pt-4 flex items-center gap-2">
+                    <button
+                      type="submit"
+                      className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-teal-700 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all duration-300 border border-transparent"
+                    >
+                      <svg
+                        className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Account Statistics
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-500">Applied Jobs</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {totalAppliedJobs}
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-500">Saved Jobs</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {totalSaveJobs}
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-500">Joined</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {date ? date.split("T")[0] : "--"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </main>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

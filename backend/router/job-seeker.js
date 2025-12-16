@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const SALTROUND = parseInt(process.env.SALTROUND) || 10;  
 const { executeQuery } = require("../mySqldb/Query");
+const { fileUpload } = require('../multerMiddleware');
+const SALTROUND = parseInt(process.env.SALTROUND) || 10;  
+const SERVER_BASE_URL = process.env.SERVER_BASE_URL || 'http://localhost:1111';  // req to get profile_pic in frontend folder to use in img src=''
 
 router.get("/profile", async (req, res) => {
   try {
@@ -21,10 +23,12 @@ router.get("/profile", async (req, res) => {
   }
 });
 
-router.patch("/profile", async (req, res) => {
+router.patch("/profile", fileUpload.single('profile_pic'), async (req, res) => {
   try {
     const user_id = req.user_id; 
-    const { name, phone, address, gender, job_role, about, profile_pic } = req.body;
+    let profile_pic;  
+    const { name, phone, address, gender, job_role, about } = req.body;
+    console.log("body\n", req.body, "\nfile obj", req.file);
     if (!name || !gender) {
       return res.status(400).send({ message: "Name and gender are required" });
     }
@@ -32,11 +36,17 @@ router.patch("/profile", async (req, res) => {
     if (!dbUser) {
       return res.status(401).send({ message: "User not found" });
     }
-
+    
+    if (!req.file) {
+      const [existingProfilePic] = await executeQuery(`SELECT profile_pic FROM profiles WHERE user_id = ?`, [user_id]);
+      profile_pic = existingProfilePic ? existingProfilePic.profile_pic : null;
+    }else{
+      profile_pic = `${SERVER_BASE_URL}/uploads/profile_pics/${req.file.filename}`; 
+    }
     const result = await executeQuery(
       `UPDATE profiles 
-       SET name = ?, phone = ?, address = ?, gender = ?, job_role = ?, about = ?, profile_pic = ?
-       WHERE user_id = ?`,
+      SET name = ?, phone = ?, address = ?, gender = ?, job_role = ?, about = ?, profile_pic = ?
+      WHERE user_id = ?`,
       [name, phone, address, gender, job_role, about, profile_pic, user_id]
     );
     if (result.affectedRows === 0) {
@@ -54,7 +64,6 @@ router.patch("/profile", async (req, res) => {
     });
   }
 });
-
 
 router.patch("/change-password", async (req, res) => {
   try {
@@ -93,8 +102,7 @@ router.get("/savedJob", async (req, res) => {
   try {
     const { user_id, user_type } = req;
     if (user_type !== 'job_seeker') {
-      // return res.status(403).send({ message: "Access denied, only job seekers can view saved jobs" });
-      res.status(200).send({data: []});
+      return res.status(200).send({data: []});
     }
     const savedJobs = await executeQuery(
       `SELECT j.* FROM savedJobs AS s INNER JOIN jobs AS j 
@@ -118,19 +126,19 @@ router.post("/saveJob", async (req, res) => {
     if(user_type === 'job_seeker'){
         const { job_id } = req.query;
         if (!job_id) {
-            return res.status(400).send({ message: "Job ID is required" });
+          return res.status(400).send({ message: "Job ID is required" });
         }
         const [existing] = await executeQuery(
-            `SELECT * FROM savedJobs WHERE job_id = ? AND user_id = ?`,
-            [job_id, user_id]
+          `SELECT * FROM savedJobs WHERE job_id = ? AND user_id = ?`,
+          [job_id, user_id]
         );
         if (existing){
-            return res.status(409).send({message: `This Job is already saved`});
+          return res.status(409).send({message: `This Job is already saved`});
         }
         
         const inserted_item = await executeQuery(
-            `INSERT INTO savedJobs(user_id, job_id) VALUES (?, ?)`,
-            [user_id, job_id]
+          `INSERT INTO savedJobs(user_id, job_id) VALUES (?, ?)`,
+          [user_id, job_id]
         );
         return res.status(200).send({ message: "Job saved successfully" });
     }else{

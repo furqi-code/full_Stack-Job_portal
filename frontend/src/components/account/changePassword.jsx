@@ -46,7 +46,7 @@ const ChangePassword = () => {
 
   return (
     <>
-      <div className="py-8">
+      <div className="py-8 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="container mx-auto px-4 max-w-[1440px]">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar */}
@@ -140,7 +140,7 @@ const ChangePassword = () => {
                     <div className="pt-4">
                       <button
                         type="submit"
-                        className="px-5 py-2 text-white rounded-lg border-2 border-green-600 bg-green-600 hover:border-transparent hover:bg-blue-400 transition duration-300 ease-in-out shadow-sm cursor-grab focus:outline-none"
+                        className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-teal-700 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all duration-300 border border-transparent"
                       >
                         Update Password
                       </button>

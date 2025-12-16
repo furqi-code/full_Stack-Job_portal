@@ -15,7 +15,7 @@ const isLoggedin = require("./router/auth-status");
 const jobs = require("./router/joblist");
 const job_seeker = require("./router/job-seeker");
 
-
+app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

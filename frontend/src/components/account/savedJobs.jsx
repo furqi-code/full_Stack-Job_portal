@@ -19,7 +19,7 @@ const SavedJobs = () => {
 
   return (
     <>
-      <div className="py-10 bg-gray-50 min-h-screen">
+      <div className="py-10 bg-gray-50 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="container mx-auto px-6 max-w-[1440px]">
           <div className="flex flex-col md:flex-row gap-10">
             {/* Sidebar */}
@@ -49,9 +49,7 @@ const SavedJobs = () => {
                     </>
                   ) : (
                     <div className="flex flex-col items-center justify-center min-h-[400px] py-14 px-8">
-                      {/* Professional Card */}
                       <div className="bg-white border border-gray-200 shadow-lg rounded-2xl p-12 max-w-lg w-full">
-                        {/* Professional Bookmark Icon */}
                         <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center mb-8 border border-gray-200">
                           <svg
                             className="w-12 h-12 text-gray-400"
@@ -80,9 +78,22 @@ const SavedJobs = () => {
                         </p>
                         <Link
                           to="/jobs"
-                          className="inline-flex items-center px-8 py-3 font-semibold text-base bg-gray-900 text-white rounded-lg hover:bg-black transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-gray-200"
+                          className="group inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white font-semibold text-base rounded-xl shadow-lg shadow-gray-900/40 hover:shadow-black/60 hover:scale-[1.02] hover:from-black hover:via-gray-900 hover:to-black border border-transparent focus:outline-none focus:ring-4 focus:ring-gray-400/40 transition-all duration-300"
                         >
-                          Browse All Jobs
+                          <span>Browse All Jobs</span>
+                          <svg
+                            className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
                         </Link>
                         <p className="text-xs text-gray-400 mt-6 text-center">
                           Tip: Use the bookmark icon on job cards to save
