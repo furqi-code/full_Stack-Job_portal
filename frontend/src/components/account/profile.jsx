@@ -4,17 +4,8 @@ import { jobContext } from "../../store/jobContext";
 import Sidebar from "./sidebar";
 import axios from "axios";
 
-// ISSUE: Uncontrolled inputs fail to populate on initial load despite successful API fetch.
-// works on navigation back from any tab due to fresh component mount/clear refs.
-
 const Profile = () => {
   const { isLoggedin } = useContext(jobContext);
-  const nameRef = useRef(null);
-  const phoneRef = useRef(null);
-  const addressRef = useRef(null);
-  const genderRef = useRef(null);
-  const jobRoleRef = useRef(null);
-  const aboutRef = useRef(null);
   const imageFileRef = useRef(null);
 
   const [profilePic, setProfilePic] = useState("");
@@ -25,6 +16,15 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    gender: "",
+    job_role: "",
+    about: ""
+  });
+
   useEffect(() => {
     axios({
       method: "GET",
@@ -33,36 +33,50 @@ const Profile = () => {
     })
       .then((res) => {
         const { name, phone, address, gender, job_role, about, profile_pic, created_at } = res.data.info;
-        if (nameRef.current) nameRef.current.value = name || "";
-        if (phoneRef.current) phoneRef.current.value = phone || "";
-        if (addressRef.current) addressRef.current.value = address || "";
-        if (genderRef.current) genderRef.current.value = gender || "";
-        if (jobRoleRef.current) jobRoleRef.current.value = job_role || "";
-        if (aboutRef.current) aboutRef.current.value = about || "";
+        setFormData({
+          name: name || "",
+          phone: phone || "",
+          address: address || "",
+          gender: gender || "",
+          job_role: job_role || "",
+          about: about || ""
+        });
+        
         setDate(created_at);
         setProfilePic(profile_pic);
         setName(name);
+        setError("");
       })
       .catch((err) => {
         console.log("Couldn't fetch user profile", err);
         setError("Failed to load profile data.");
       });
-  }, [success]);
+  }, [success]); 
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSaveChanges = (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    const formData = new FormData();
-    formData.append("name", nameRef.current.value);
-    formData.append("phone", phoneRef.current.value);
-    formData.append("address", addressRef.current.value);
-    formData.append("gender", genderRef.current.value);
-    formData.append("job_role", jobRoleRef.current.value);
-    formData.append("about", aboutRef.current.value);
-    if (imageFileRef.current.files.length > 0)
-      formData.append("profile_pic", imageFileRef.current.files[0]);
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("phone", formData.phone);
+    formDataToSend.append("address", formData.address);
+    formDataToSend.append("gender", formData.gender);
+    formDataToSend.append("job_role", formData.job_role);
+    formDataToSend.append("about", formData.about);
+    
+    if (imageFileRef.current?.files.length > 0) {
+      formDataToSend.append("profile_pic", imageFileRef.current.files[0]);
+    }
 
     axios({
       method: "PATCH",
@@ -71,7 +85,7 @@ const Profile = () => {
         "Content-Type": "multipart/form-data",
       },
       withCredentials: true,
-      data: formData,
+      data: formDataToSend,
     })
       .then((res) => {
         console.log("Profile updated", res.data.message);
@@ -116,7 +130,6 @@ const Profile = () => {
 
           {/* Main Content */}
           <main className="flex-1 space-y-8">
-            {/* Profile Information Card */}
             <div className="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl border border-white/50 p-8">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
@@ -171,32 +184,30 @@ const Profile = () => {
                 <div className="lg:col-span-2 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-semibold text-gray-700 mb-2"
-                      >
+                      <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                         Full Name
                       </label>
                       <input
                         id="name"
+                        name="name"
                         type="text"
-                        ref={nameRef}
+                        value={formData.name}
+                        onChange={handleInputChange}
                         className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-lg placeholder-gray-400"
                         placeholder="Enter your full name"
                       />
                     </div>
 
                     <div>
-                      <label
-                        htmlFor="phone"
-                        className="block text-sm font-semibold text-gray-700 mb-2"
-                      >
+                      <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
                         Phone Number
                       </label>
                       <input
                         id="phone"
+                        name="phone"
                         type="tel"
-                        ref={phoneRef}
+                        value={formData.phone}
+                        onChange={handleInputChange}
                         className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
                         placeholder="+91 98765 43210"
                       />
@@ -205,15 +216,14 @@ const Profile = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label
-                        htmlFor="gender"
-                        className="block text-sm font-semibold text-gray-700 mb-2"
-                      >
+                      <label htmlFor="gender" className="block text-sm font-semibold text-gray-700 mb-2">
                         Gender
                       </label>
                       <select
                         id="gender"
-                        ref={genderRef}
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleInputChange}
                         className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
                       >
                         <option value="">Select Gender</option>
@@ -224,15 +234,14 @@ const Profile = () => {
                     </div>
 
                     <div>
-                      <label
-                        htmlFor="job_role"
-                        className="block text-sm font-semibold text-gray-700 mb-2"
-                      >
+                      <label htmlFor="job_role" className="block text-sm font-semibold text-gray-700 mb-2">
                         Job Role
                       </label>
                       <select
                         id="job_role"
-                        ref={jobRoleRef}
+                        name="job_role"
+                        value={formData.job_role}
+                        onChange={handleInputChange}
                         className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300"
                       >
                         <option value="">Select Job Role</option>
@@ -249,32 +258,30 @@ const Profile = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="address"
-                      className="block text-sm font-semibold text-gray-700 mb-2"
-                    >
+                    <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-2">
                       Address
                     </label>
                     <input
                       id="address"
+                      name="address"
                       type="text"
-                      ref={addressRef}
+                      value={formData.address}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
                       placeholder="City, State, Country"
                     />
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="about"
-                      className="block text-sm font-semibold text-gray-700 mb-2"
-                    >
+                    <label htmlFor="about" className="block text-sm font-semibold text-gray-700 mb-2">
                       About
                     </label>
                     <textarea
                       id="about"
+                      name="about"
                       rows={4}
-                      ref={aboutRef}
+                      value={formData.about}
+                      onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 resize-vertical placeholder-gray-400"
                       placeholder="Tell us about yourself and your professional background..."
                     />
