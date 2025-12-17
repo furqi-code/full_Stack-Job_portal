@@ -2,23 +2,26 @@ import { jobContext } from "../../store/jobContext";
 import { useState, useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router";
-import ApplyDialog from '../shared/applyDialog';
+import ApplyDialog from "../shared/applyDialog";
 import axios from "axios";
 
 const JobDetail = () => {
   const { handleSaveJobs, deleteSavedJob, isLoggedin, user_type, saveJobList } = useContext(jobContext);
+  const [totalApplicants, setTotalApplicants] = useState(0);
   const [jobSearch, setJob] = useState(null);
   const [isApplied, setisApplied] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { jobId } = useParams();
   console.log("job id - ", jobId);
 
+  // fetch job details
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:1111/joblist/oneJob?id=${jobId}`)
+    axios
+      .get(`http://localhost:1111/joblist/oneJob?id=${jobId}`)
       .then((res) => {
         setJob(res.data.data);
         setLoading(false);
@@ -29,14 +32,53 @@ const JobDetail = () => {
       });
   }, []);
 
+  //  total applicants applied for this job
+  useEffect(() => {
+    axios.get(`http://localhost:1111/joblist/applicants?job_id=${jobId}`)
+      .then((res) => {
+        setTotalApplicants(res.data.data.length);
+      })
+      .catch(() => {
+        console.log("couldn't fetch total applicants for this particular job");
+      })
+  }, [jobId]);
+
+  //  disable apply btn if job_seekers already applied for this job
+  useEffect(() => {
+    if (!isLoggedin || user_type !== "job_seeker") return;
+
+    const checkApplied = async () => {
+      try {
+        const res = await axios.get(`http://localhost:1111/account/job_seeker/appliedJob?job_id=${jobId}`,
+        { withCredentials: true });
+        if (res.data.data.length === 0) {
+          setisApplied(false);  // haven't applied
+        } else {
+          const application = res.data.data[0];
+          if (application.status === "pending") {
+            setisApplied(true);
+          } else {
+            setisApplied(false); // employer shorlisted or rejected the applicant
+          }
+        }
+      } catch (err) {
+        console.log("couldn't fetch applied job");
+        setisApplied(false);
+      }
+    };
+    checkApplied();
+  }, [isLoggedin, user_type, jobId]);
+
   useEffect(() => {
     if (jobSearch) {
-      const isSaved = saveJobList.some((saved) => saved.job_id === jobSearch.id);
+      const isSaved = saveJobList.some(
+        (saved) => saved.job_id === jobSearch.id
+      );
       setAlreadySaved(isSaved);
     } else {
       setAlreadySaved(false); // reset if jobSearch is not loaded yet
     }
-  }, [saveJobList, jobSearch]); 
+  }, [saveJobList, jobSearch]);
 
   const fallBack = {
     title: "ABC",
@@ -70,15 +112,17 @@ const JobDetail = () => {
   const typeColor = getTypeColor(job.type);
 
   const handleApplyBtn = () => {
-    if (isLoggedin) {
-      if (user_type !== "job_seeker") {
-        return toast.warning("Sorry, you aren't a valid user");
-      }
-      setOpen(true);
-    } else {
-      toast.error("Kindly login to apply to this job post");
+    if (!isLoggedin) {
+      return toast.error("Kindly login to apply to this job post");
     }
-  }
+    if (user_type !== "job_seeker") {
+      return toast.warning("Sorry, you aren't a valid user");
+    }
+    if (isApplied) {
+      return toast.info("You have a pending application for this job");
+    }
+    setOpenDialog(true);
+  };
 
   if (loading) {
     return (
@@ -168,7 +212,7 @@ const JobDetail = () => {
               </svg>
             </button>
             <button
-            onClick={handleApplyBtn}
+              onClick={handleApplyBtn}
               disabled={isApplied}
               className={`rounded-lg px-6 py-2 text-white font-bold transition-colors duration-300 ${
                 isApplied
@@ -181,7 +225,7 @@ const JobDetail = () => {
           </div>
         </div>
 
-        {open ? <ApplyDialog setOpen={setOpen} open={open} job_id={job.id} /> : ""}
+        {openDialog ? (<ApplyDialog setOpenDialog={setOpenDialog} openDialog={openDialog} job_id={job.id} />) : ("")}
 
         {/* Job Details */}
         <section>
@@ -214,13 +258,19 @@ const JobDetail = () => {
               </p>
             </div>
             <div>
+              <h3 className="font-bold">Total Applicants</h3>
+              <p className="pl-4">
+                {totalApplicants} 
+              </p>
+            </div>
+            <div>
               <h3 className="font-bold">Posted Date</h3>
               <p className="pl-4">{job.created_at.split("T")[0]}</p>
             </div>
           </div>
         </section>
       </div>
-      <ToastContainer position="bottom-right"/>
+      <ToastContainer position="bottom-right" />
     </>
   );
 };

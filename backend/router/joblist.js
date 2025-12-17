@@ -72,4 +72,23 @@ router.get("/oneJob", async (req, res) => {
   }
 });
 
+router.get("/applicants", async (req, res) => {
+  try {
+    const { job_id } = req.query;
+    if (!job_id) {
+      return res.status(400).send({ message: "job_id query parameter is required" });
+    }
+    const totalApplicants = await executeQuery(`SELECT user_id FROM applications WHERE job_id = ?`, [job_id]);
+    if (totalApplicants.length === 0) {
+      return res.status(404).send({ data: [] });
+    }
+    res.status(200).send({ data: totalApplicants });
+  } catch (err) {
+    console.error("Error fetching applicants for this particular job: ", err);
+    res.status(500).send({
+      message: err.message || "Something went wrong",
+    });
+  }
+});
+
 module.exports = router;

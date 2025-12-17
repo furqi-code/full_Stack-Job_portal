@@ -13,7 +13,7 @@ import {
 import { useState, useRef } from "react";
 import axios from "axios";
 
-export default function ApplyDialog({ open, setOpen, job_id }) {
+export default function ApplyDialog({ openDialog, setOpenDialog, job_id }) {
   const resumeFileRef = useRef(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -42,7 +42,7 @@ export default function ApplyDialog({ open, setOpen, job_id }) {
         setSuccess("Resume uploaded successfully");
         setTimeout(() => {
           setSuccess("");
-          setOpen(false);
+          setOpenDialog(false);
         }, 2000);
       })
       .catch((err) => {
@@ -53,7 +53,7 @@ export default function ApplyDialog({ open, setOpen, job_id }) {
 
   return (
     <div>
-      <Dialog open={open} onClose={setOpen} className="relative z-50">
+      <Dialog open={openDialog} onClose={setOpenDialog} className="relative z-50">
         <DialogBackdrop
           transition
           className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -129,7 +129,7 @@ export default function ApplyDialog({ open, setOpen, job_id }) {
                   <button
                     type="button"
                     data-autofocus
-                    onClick={() => setOpen(false)}
+                    onClick={() => setOpenDialog(false)}
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-white/5 hover:bg-white/20 sm:mt-0 sm:w-auto"
                   >
                     Cancel

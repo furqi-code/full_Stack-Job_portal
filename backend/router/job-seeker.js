@@ -2,9 +2,12 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const { executeQuery } = require("../mySqldb/Query");
+const { Auth } = require("../Authmiddleware");
 const { fileUpload } = require('../multerMiddleware');
 const SALTROUND = parseInt(process.env.SALTROUND) || 10;  
 const SERVER_BASE_URL = process.env.SERVER_BASE_URL || 'http://localhost:1111';  // req to get profile_pic in frontend folder to use in img src=''
+
+router.use(Auth);
 
 router.get("/profile", async (req, res) => {
   try {
@@ -204,6 +207,31 @@ router.post('/apply', fileUpload.single('resume'), async (req, res) => {
     res.status(201).send({ message: "Application submitted successfully" });
   } catch (err) {
     res.status(500).send({ message: "Something went wrong" });
+  }
+});
+
+// fetch one application when you open a job detail page
+router.get("/appliedJob", async (req, res) => {
+  try {
+    const { user_id } = req; 
+    const { job_id } = req.query;
+    console.log(user_id, job_id);
+    if (!user_id) {
+      return res.status(401).send({ message: "Unauthorized: User not logged in" });
+    }
+    if (!job_id) {
+      return res.status(400).send({ message: "job_id query parameter is required" });
+    }
+    const appliedJob = await executeQuery(`SELECT * FROM applications WHERE user_id = ? AND job_id = ?`, [user_id, job_id]);
+    if (appliedJob.length === 0) {
+      return res.status(404).send({ data: [] });
+    }
+    res.status(200).send({ data: appliedJob });
+  } catch (err) {
+    console.error("Error fetching applied job: ", err);
+    res.status(500).send({
+      message: err.message || "Something went wrong",
+    });
   }
 });
 

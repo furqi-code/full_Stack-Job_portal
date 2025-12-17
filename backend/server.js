@@ -4,7 +4,6 @@ const app = express();
 const PORT = parseInt(process.env.PORT) || 3000;
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const { Auth } = require("./Authmiddleware");
 
 // Local modules
 const register = require("./router/register");
@@ -25,15 +24,15 @@ app.use(
     credentials: true,
   })
 );
-app.use(Auth);
   
-
+// Public routes 
 app.use('/register', register);
 app.use('/login', login)
 app.use('/logout', logout);
 app.use("/forgotPassword", forgot);
 app.use('/auth/status', isLoggedin)  // to set the state in JobContextProvider
 app.use('/joblist', jobs);
+// Protected routes
 app.use('/account/job_seeker', job_seeker);
 
 
