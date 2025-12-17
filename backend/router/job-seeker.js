@@ -16,8 +16,13 @@ router.get("/profile", async (req, res) => {
       `SELECT * FROM profiles WHERE user_id = ?`,
       [user_id]
     );
+    const [dbUserCreated_at] = await executeQuery(
+      `SELECT created_at FROM users WHERE id = ?`,
+      [user_id]
+    );
     res.status(200).send({
       info: dbUser,
+      joined: dbUserCreated_at
     });
   } catch (err) {
     res.status(500).send({

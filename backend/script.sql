@@ -23,6 +23,7 @@ CREATE TABLE profiles (
   job_role VARCHAR(255),
   about TEXT,
   profile_pic TEXT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -64,11 +65,12 @@ CREATE TABLE jobs (
 -- Applications table
 CREATE TABLE applications (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  job_id INT NOT NULL,
   user_id INT NOT NULL,
+  job_id INT NOT NULL,
   resume_url VARCHAR(255) NOT NULL,
-  status ENUM('pending', 'reviewing', 'shortlisted', 'rejected') NOT NULL,
+  status ENUM('pending', 'shortlisted', 'rejected') NOT NULL,
   applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -108,8 +110,7 @@ INSERT INTO jobs (
 (1, 'Technical Writer', 'Technical Writer role based in Vancouver with salary range CAD 60K to CAD 85K.', 'Red Hat', 'Part-time', 'Remote', 'Vancouver', 1, 6, 60, 85, 'https://logo.clearbit.com/redhat.com', CURRENT_TIMESTAMP, NULL);
 
 
-
-select * from users;
+select * from users;	
 select * from profiles;
 select * from skills;
 select * from user_skills;
@@ -120,6 +121,7 @@ select * from applications;
 drop table users;
 drop table jobs;
 drop table savedJobs;
+drop table applications;
 
 
 drop database job_board;

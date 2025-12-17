@@ -32,7 +32,8 @@ const Profile = () => {
       withCredentials: true,
     })
       .then((res) => {
-        const { name, phone, address, gender, job_role, about, profile_pic, created_at } = res.data.info;
+        const { name, phone, address, gender, job_role, about, profile_pic } = res.data.info;
+        const { created_at } = res.data.joined; // from users table
         setFormData({
           name: name || "",
           phone: phone || "",
@@ -53,6 +54,35 @@ const Profile = () => {
       });
   }, [success]); 
 
+  // Account statistics data fetch
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/account/job_seeker/appliedJobs",
+      withCredentials: true
+    })
+      .then((res) => {
+        if (res.data.data.length > 0) setTotalAppliedJobs(res.data.data.length);
+      })
+      .catch((err) => {
+        console.log("Couldn't fetch user applied jobs", err);
+      });
+  },[]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:1111/account/job_seeker/savedJob`,
+      withCredentials: true
+    })
+      .then((res) => {
+        if (res.data.data.length > 0) setTotalSaveJobs(res.data.data.length);
+      })
+      .catch((err) => {
+        console.log("Error while fetching your saved jobs");
+      });
+  },[]);
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
