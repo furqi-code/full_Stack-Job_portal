@@ -91,7 +91,6 @@ const JobDetail = () => {
     salary_max: 0,
     experience_min: 0,
     experience_max: 0,
-    // applications: [],
     created_at: "",
   };
   const job = jobSearch || fallBack;

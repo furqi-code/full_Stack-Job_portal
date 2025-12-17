@@ -210,6 +210,30 @@ router.post('/apply', fileUpload.single('resume'), async (req, res) => {
   }
 });
 
+// fetch multiple applications where you have applied
+router.get("/appliedJobs", async (req, res) => {
+  try {
+    const { user_id } = req; 
+    if (!user_id) {
+      return res.status(401).send({ message: "Unauthorized: User not logged in" });
+    }
+    const appliedJobs = await executeQuery(`SELECT j.id, j.company, j.title AS job_role, j.location, a.status, j.companyLogo, j.work_mode
+      FROM applications a
+      INNER JOIN jobs j ON a.job_id = j.id
+      WHERE a.user_id = ?
+      ORDER BY a.applied_at DESC`, [user_id]);  
+    if (appliedJobs.length === 0) {
+      return res.status(404).send({ data: [] });
+    }
+    res.status(200).send({ data: appliedJobs });
+  } catch (err) {
+    console.error("Error fetching your applied job: ", err);
+    res.status(500).send({
+      message: err.message || "Something went wrong",
+    });
+  }
+});
+
 // fetch one application when you open a job detail page
 router.get("/appliedJob", async (req, res) => {
   try {
