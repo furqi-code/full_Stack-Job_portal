@@ -5,6 +5,7 @@ import axios from "axios";
 export const jobContext = createContext({
   saveJobList: [],
   isLoggedin: undefined,
+  user_type: "",
   setIsloggedin: () => {},
   setUser_type: () => {},
   getSavedJobList: () => {},
@@ -160,6 +161,7 @@ export const JobContextProvider = ({ children }) => {
       value={{
         saveJobList: state.saveJobList,
         isLoggedin: state.isLoggedin,
+        user_type: state.user_type,
         setIsloggedin,
         setUser_type,
         getSavedJobList,

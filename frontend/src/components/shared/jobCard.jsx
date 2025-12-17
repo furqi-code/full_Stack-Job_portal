@@ -7,14 +7,14 @@ const JobCard = ({ job }) => {
 
   const getModeColor = (mode) => {
     if (mode === "Hybrid") return "bg-yellow-100 text-yellow-700";
-    if (mode === "Remote") return "bg-green-100 text-green-700";
+    if (mode === "Remote") return "bg-green-200 text-green-700";
     return "bg-red-100 text-red-700";
   };
   const modeColor = getModeColor(job.work_mode);
 
   return (
     <>
-      <div className="job-card bg-white rounded-2xl p-6 shadow-lg">
+      <div className="job-card bg-white rounded-2xl p-6 shadow-lg bg-gradient-to-br from-indigo-100 via-blue-50 to-slate-50">
         <div className="flex items-start justify-between mb-4">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center">
             <img

@@ -2,11 +2,11 @@ import { jobContext } from "../../store/jobContext";
 import { useState, useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router";
-import Example from '../shared/applyModal';
+import ApplyDialog from '../shared/applyDialog';
 import axios from "axios";
 
 const JobDetail = () => {
-  const { handleSaveJobs, deleteSavedJob, saveJobList } = useContext(jobContext);
+  const { handleSaveJobs, deleteSavedJob, isLoggedin, user_type, saveJobList } = useContext(jobContext);
   const [jobSearch, setJob] = useState(null);
   const [isApplied, setisApplied] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
@@ -69,6 +69,17 @@ const JobDetail = () => {
   const modeColor = getModeColor(job.work_mode);
   const typeColor = getTypeColor(job.type);
 
+  const handleApplyBtn = () => {
+    if (isLoggedin) {
+      if (user_type !== "job_seeker") {
+        return toast.warning("Sorry, you aren't a valid user");
+      }
+      setOpen(true);
+    } else {
+      toast.error("Kindly login to apply to this job post");
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto my-20 p-8 bg-white rounded-lg shadow-lg">
@@ -91,7 +102,7 @@ const JobDetail = () => {
 
   return (
     <>
-      <div className="max-w-4xl mx-auto my-20 p-8 bg-white rounded-lg shadow-lg">
+      <div className="max-w-4xl mx-auto my-20 p-8 rounded-lg shadow-lg bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200">
         <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
           <div>
             {/* Company logo and name */}
@@ -122,7 +133,7 @@ const JobDetail = () => {
               >
                 {job.work_mode}
               </span>
-              <span className="inline-block bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold">
+              <span className="inline-block bg-gray-200 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold">
                 {job.location}
               </span>
             </div>
@@ -157,7 +168,7 @@ const JobDetail = () => {
               </svg>
             </button>
             <button
-            onClick={() => setOpen(true)}
+            onClick={handleApplyBtn}
               disabled={isApplied}
               className={`rounded-lg px-6 py-2 text-white font-bold transition-colors duration-300 ${
                 isApplied
@@ -170,7 +181,7 @@ const JobDetail = () => {
           </div>
         </div>
 
-        {open ? <><Example setOpen={setOpen} open={open} /></> : ""}
+        {open ? <ApplyDialog setOpen={setOpen} open={open} job_id={job.id} /> : ""}
 
         {/* Job Details */}
         <section>

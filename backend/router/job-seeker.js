@@ -172,4 +172,39 @@ router.delete("/eliminateJob", async (req, res) => {
   }
 });
 
+router.post('/apply', fileUpload.single('resume'), async (req, res) => {
+  try {
+    const { user_id, user_type } = req;
+    const job_id = req.query.job_id;
+    if (!req.file) {
+      return res.status(400).send({ message: "Resume file is required or invalid type" });
+    }
+    if (user_type !== 'job_seeker') {
+      return res.status(403).send({ message: "This user isn't a job seeker" });
+    }
+
+    const alreadyApplied = await executeQuery(
+      'SELECT id FROM applications WHERE user_id = ? AND job_id = ?',
+      [user_id, job_id]);
+
+    if (alreadyApplied.length > 0) {
+      // Update resume & status
+      const resume = `${SERVER_BASE_URL}/uploads/resumes_pdf/${req.file.filename}`;
+      await executeQuery('UPDATE applications SET resume_url = ?, status = ? WHERE id = ?',
+        [resume, 'pending', alreadyApplied[0].id]);
+      return res.status(200).send({ message: "Application updated with new resume" });
+      
+      // OR reject duplicate 
+      // return res.status(409).send({ message: "Application already exists for this job" });
+    }
+
+    const resume = `${SERVER_BASE_URL}/uploads/resumes_pdf/${req.file.filename}`;
+    await executeQuery('INSERT INTO applications(user_id, job_id, resume_url, status) VALUES(?, ?, ?, ?)',
+      [user_id, job_id, resume, 'pending']);
+    res.status(201).send({ message: "Application submitted successfully" });
+  } catch (err) {
+    res.status(500).send({ message: "Something went wrong" });
+  }
+});
+
 module.exports = router
