@@ -6,7 +6,7 @@ import ApplyDialog from "../shared/applyDialog";
 import axios from "axios";
 
 const JobDetail = () => {
-  const { handleSaveJobs, deleteSavedJob, isLoggedin, user_type, saveJobList } = useContext(jobContext);
+  const { handleSaveJobs, deleteSavedJob, getSavedJobList, isLoggedin, user_type, saveJobList } = useContext(jobContext);
   const [totalApplicants, setTotalApplicants] = useState(0);
   const [jobSearch, setJob] = useState(null);
   const [isApplied, setisApplied] = useState(false);
@@ -20,8 +20,7 @@ const JobDetail = () => {
   // fetch job details
   useEffect(() => {
     setLoading(true);
-    axios
-      .get(`http://localhost:1111/joblist/oneJob?id=${jobId}`)
+    axios.get(`http://localhost:1111/joblist/oneJob?id=${jobId}`)
       .then((res) => {
         setJob(res.data.data);
         setLoading(false);
@@ -70,10 +69,14 @@ const JobDetail = () => {
   }, [isLoggedin, user_type, jobId]);
 
   useEffect(() => {
+    if (isLoggedin) {
+      getSavedJobList();
+    }
+  }, [isLoggedin]); 
+
+  useEffect(() => {
     if (jobSearch) {
-      const isSaved = saveJobList.some(
-        (saved) => saved.job_id === jobSearch.id
-      );
+      const isSaved = saveJobList.some((saved) => saved.id === parseInt(jobId));  
       setAlreadySaved(isSaved);
     } else {
       setAlreadySaved(false); // reset if jobSearch is not loaded yet

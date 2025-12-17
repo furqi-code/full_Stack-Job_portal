@@ -239,7 +239,6 @@ router.get("/appliedJob", async (req, res) => {
   try {
     const { user_id } = req; 
     const { job_id } = req.query;
-    console.log(user_id, job_id);
     if (!user_id) {
       return res.status(401).send({ message: "Unauthorized: User not logged in" });
     }
