@@ -2,12 +2,14 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router";
 import { jobContext } from "../../../store/jobContext";
 import { ToastContainer, toast } from "react-toastify";
+import CandidateTable from "../../shared/applicationCandidateTable";
 import Sidebar from "../sidebar";
 import axios from "axios";
 
 const Applications = () => {
   const { isLoggedin } = useContext(jobContext);
   const [applications, setApplications] = useState([]);
+  console.log('applications\n', applications);
   // used in sidebar
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
@@ -15,7 +17,19 @@ const Applications = () => {
   // manually reload pe this component renders before isloggedin state changes thats why if() not working
   // so we had to use dependancy to re-run the useEffect
   useEffect(() => {
-    if (isLoggedin){}
+    if (isLoggedin) {
+      axios({
+        method: "GET",
+        url: "http://localhost:1111/account/employer/applications",
+        withCredentials: true,
+      })
+        .then((res) => {
+          setApplications(res.data.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching your Applications:", error);
+        });
+    }
   }, [isLoggedin]);
 
   return (
@@ -43,7 +57,7 @@ const Applications = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {applications.length > 0 ? (
                       applications.map((job) => (
-                        <AppliedJobTable
+                        <CandidateTable
                           key={job.job_id}
                           job={job}
                           applications={applications}

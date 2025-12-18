@@ -13,10 +13,9 @@ import {
 import { useState, useRef } from "react";
 import axios from "axios";
 
-export default function ApplyDialog({ openDialog, setOpenDialog, job_id }) {
+export default function ApplyDialog({ openDialog, setOpenDialog, job_id, success, setSuccess }) {
   const resumeFileRef = useRef(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleApplyJob = () => {
     setError("");

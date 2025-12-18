@@ -73,19 +73,37 @@ const Sidebar = ({ name, profilePic, setName, setProfilePic }) => {
   }
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:1111/account/job_seeker/profile",
-      withCredentials: true,
-    })
-      .then((res) => {
-        const { name, profile_pic } = res.data.info;
-        setName(name);
-        setProfilePic(profile_pic);
+    // both api call gives the same output for profile btw (unnecessary)
+    if (user_type === "job_seeker") {
+      axios({
+        method: "GET",
+        url: "http://localhost:1111/account/job_seeker/profile",
+        withCredentials: true,
       })
-      .catch((err) => {
-        console.log("Couldn't fetch user profile", err);
-      });
+        .then((res) => {
+          const { name, profile_pic } = res.data.info;
+          setName(name);
+          setProfilePic(profile_pic);
+        })
+        .catch((err) => {
+          console.log("Couldn't fetch job_seeker profile", err);
+        });
+    }
+    if (user_type === "employer") {
+      axios({
+        method: "GET",
+        url: "http://localhost:1111/account/employer/profile",
+        withCredentials: true,
+      })
+        .then((res) => {
+          const { name, profile_pic } = res.data.info;
+          setName(name);
+          setProfilePic(profile_pic);
+        })
+        .catch((err) => {
+          console.log("Couldn't fetch Employer profile", err);
+        });
+    }
   }, []);
 
   const logout = () => {

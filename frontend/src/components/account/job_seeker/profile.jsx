@@ -22,7 +22,8 @@ const Job_seeker_profile = () => {
     address: "",
     gender: "",
     job_role: "",
-    about: ""
+    about: "",
+    total_Exp: undefined,
   });
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const Job_seeker_profile = () => {
       withCredentials: true,
     })
       .then((res) => {
-        const { name, phone, address, gender, job_role, about, profile_pic } = res.data.info;
+        const { name, phone, address, gender, job_role, total_experience, about, profile_pic } = res.data.info;
         const { created_at } = res.data.joined; // from users table
         setFormData({
           name: name || "",
@@ -40,7 +41,8 @@ const Job_seeker_profile = () => {
           address: address || "",
           gender: gender || "",
           job_role: job_role || "",
-          about: about || ""
+          about: about || "",
+          total_Exp: total_experience || undefined,
         });
         
         setDate(created_at);
@@ -103,6 +105,7 @@ const Job_seeker_profile = () => {
     formDataToSend.append("gender", formData.gender);
     formDataToSend.append("job_role", formData.job_role);
     formDataToSend.append("about", formData.about);
+    formDataToSend.append("total_Exp", formData.total_Exp);
     
     if (imageFileRef.current?.files.length > 0) {
       formDataToSend.append("profile_pic", imageFileRef.current.files[0]);
@@ -281,6 +284,21 @@ const Job_seeker_profile = () => {
                         <option value="AI Researcher">AI Researcher</option>
                         <option value="Data Analyst">Data Analyst</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="total_Exp" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Total Experience
+                      </label>
+                      <input
+                        id="total_Exp"
+                        name="total_Exp"
+                        type="number"
+                        placeholder="5"
+                        value={formData.total_Exp}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
+                      />
                     </div>
                   </div>
 

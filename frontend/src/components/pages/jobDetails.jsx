@@ -13,6 +13,7 @@ const JobDetail = () => {
   const [alreadySaved, setAlreadySaved] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(""); // used in apply dialog, declared here to re-run useEffect to render correct ui
   const [error, setError] = useState(null);
   const { jobId } = useParams();
   console.log("job id - ", jobId);
@@ -40,7 +41,7 @@ const JobDetail = () => {
       .catch(() => {
         console.log("couldn't fetch total applicants for this particular job");
       })
-  }, [jobId]);
+  }, [jobId, success]);
 
   //  disable apply btn if job_seekers already applied for this job
   useEffect(() => {
@@ -66,7 +67,7 @@ const JobDetail = () => {
       }
     };
     checkApplied();
-  }, [isLoggedin, user_type, jobId]);
+  }, [isLoggedin, user_type, jobId, success]);
 
   useEffect(() => {
     if (isLoggedin) {
@@ -227,7 +228,12 @@ const JobDetail = () => {
           </div>
         </div>
 
-        {openDialog ? (<ApplyDialog setOpenDialog={setOpenDialog} openDialog={openDialog} job_id={job.id} />) : ("")}
+        {openDialog ? (<ApplyDialog 
+          setOpenDialog={setOpenDialog}
+          openDialog={openDialog}
+          setSuccess={setSuccess}
+          success={success}
+          job_id={job.id} />) : ("")}
 
         {/* Job Details */}
         <section>

@@ -35,7 +35,7 @@ router.patch("/profile", fileUpload.single('profile_pic'), async (req, res) => {
   try {
     const user_id = req.user_id; 
     let profile_pic;  
-    const { name, phone, address, gender, job_role, about } = req.body;
+    const { name, phone, address, gender, job_role, total_Exp, about } = req.body;
     console.log("body\n", req.body, "\nfile obj", req.file);
     if (!name || !gender) {
       return res.status(400).send({ message: "Name and gender are required" });
@@ -53,9 +53,9 @@ router.patch("/profile", fileUpload.single('profile_pic'), async (req, res) => {
     }
     const result = await executeQuery(
       `UPDATE profiles 
-      SET name = ?, phone = ?, address = ?, gender = ?, job_role = ?, about = ?, profile_pic = ?
+      SET name = ?, phone = ?, address = ?, gender = ?, job_role = ?, total_experience = ?, about = ?, profile_pic = ?
       WHERE user_id = ?`,
-      [name, phone, address, gender, job_role, about, profile_pic, user_id]
+      [name, phone, address, gender, job_role, total_Exp, about, profile_pic, user_id]
     );
     if (result.affectedRows === 0) {
       return res.status(404).send({ message: "Profile not found" });
