@@ -49,11 +49,11 @@ const routes = createBrowserRouter([
         element: <Employer_profile />,
       },
       {
-        path: "/account/employer/Posted-Jobs",
+        path: "/account/employer/posted-Jobs",
         element: <PostedJobs />,
       },
       {
-        path: "/account/employer/Applications",
+        path: "/account/employer/applications",
         element: <Applications />,
       },
       {

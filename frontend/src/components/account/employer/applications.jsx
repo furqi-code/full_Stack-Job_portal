@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router";
 import { jobContext } from "../../../store/jobContext";
 import { ToastContainer, toast } from "react-toastify";
 import CandidateTable from "../../shared/applicationCandidateTable";
@@ -56,10 +55,10 @@ const Applications = () => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {applications.length > 0 ? (
-                      applications.map((job) => (
+                      applications.map((candidate) => (
                         <CandidateTable
-                          key={job.job_id}
-                          job={job}
+                          key={candidate.profile_id}
+                          candidate={candidate}
                           applications={applications}
                           setApplications={setApplications}
                         />

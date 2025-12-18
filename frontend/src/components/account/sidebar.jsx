@@ -53,13 +53,13 @@ const Sidebar = ({ name, profilePic, setName, setProfilePic }) => {
       },
       {
         id: "Posts",
-        url: "/account/employer/Posted-Jobs",
+        url: "/account/employer/posted-Jobs",
         name: "Posted Jobs",
         icon: DocumentTextIcon,
       },
       {
         id: "applications",
-        url: "/account/employer/Applications",
+        url: "/account/employer/applications",
         name: "Applications",
         icon: HeartIcon,
       },

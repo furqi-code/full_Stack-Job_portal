@@ -70,4 +70,29 @@ router.patch("/profile", fileUpload.single('profile_pic'), async (req, res) => {
   }
 });
 
+router.get("/applications", async (req, res) => {
+  try {
+    const { user_id } = req; 
+
+    const rows = await executeQuery(
+      `SELECT a.applied_at, a.resume_url,
+        j.title AS job_title, j.company, j.location, j.work_mode,
+        p.id AS profile_id, p.name, p.phone, p.profile_pic,
+        u.email 
+       FROM applications a
+       INNER JOIN jobs j ON a.job_id = j.id
+       INNER JOIN profiles p ON a.user_id = p.user_id
+       INNER JOIN users u ON a.user_id = u.id
+       WHERE j.employer_id = ?
+       ORDER BY a.applied_at DESC`,
+      [user_id]
+    );
+
+    res.status(200).send({ data: rows });
+  } catch (err) {
+    res.status(500).send({ message: err.message || "Something went wrong" });
+  }
+});
+
+
 module.exports = router;
