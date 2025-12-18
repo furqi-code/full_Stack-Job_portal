@@ -5,7 +5,7 @@ const { executeQuery } = require("../mySqldb/Query");
 const { Auth } = require("../Authmiddleware");
 const { fileUpload } = require('../multerMiddleware');
 const SALTROUND = parseInt(process.env.SALTROUND) || 10;  
-const SERVER_BASE_URL = process.env.SERVER_BASE_URL || 'http://localhost:1111';  // req to get profile_pic in frontend folder to use in img src=''
+const SERVER_BASE_URL = process.env.SERVER_BASE_URL || 'http://localhost:1111';  // req to get profile_pic accessible in frontend folder to use in img src=''
 
 router.use(Auth);
 
@@ -62,7 +62,6 @@ router.patch("/profile", fileUpload.single('profile_pic'), async (req, res) => {
     }
     res.status(200).send({
       message: "User profile updated successfully",
-      info: { name, phone, address, gender, job_role, about, profile_pic }
     });
   } catch (err) {
     console.error("Profile update error:", err);
