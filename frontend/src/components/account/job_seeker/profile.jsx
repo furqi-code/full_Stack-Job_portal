@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { Cog6ToothIcon, CameraIcon } from "@heroicons/react/24/outline";
-import { jobContext } from "../../store/jobContext";
-import Sidebar from "./sidebar";
+import { jobContext } from "../../../store/jobContext";
+import Sidebar from "../sidebar";
 import axios from "axios";
 
-const Profile = () => {
+const Job_seeker_profile = () => {
   const { isLoggedin } = useContext(jobContext);
   const imageFileRef = useRef(null);
 
@@ -374,4 +374,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Job_seeker_profile;

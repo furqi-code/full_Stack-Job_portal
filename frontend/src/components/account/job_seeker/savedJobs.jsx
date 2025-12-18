@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router";
-import { jobContext } from "../../store/jobContext";
+import { jobContext } from "../../../store/jobContext";
 import { ToastContainer, toast } from "react-toastify";
-import JobCard from "../shared/jobCard";
-import Sidebar from "./sidebar";
+import JobCard from "../../shared/jobCard";
+import Sidebar from "../sidebar";
 
 const SavedJobs = () => {
   const { isLoggedin, saveJobList, getSavedJobList } = useContext(jobContext);

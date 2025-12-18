@@ -1,27 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import AppliedJobTable from "../shared/appliedJobTable";
-import Sidebar from "./sidebar";
+import JobCard from "../../shared/jobCard";
+import Sidebar from "../sidebar";
 import axios from "axios";
 
-const AppliedJobs = () => {
-  const [appliedJobs, setAppliedJobs] = useState([]);
+const PostedJobs = () => {
+  const [postedJobs, setPostedJobs] = useState([]);
   // used in sidebar
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
 
   useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:1111/account/job_seeker/appliedJobs",
-      withCredentials: true,
-    })
-      .then((res) => {
-        setAppliedJobs(res.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching your jobs:", error);
-      });
+    
   }, []);
 
   return (
@@ -43,10 +33,10 @@ const AppliedJobs = () => {
                 <div className="bg-white shadow rounded-lg p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-medium text-gray-900">
-                      Applied Job list
+                      Posted Jobs
                     </h3>
-                    <Link
-                      to="/Jobs"
+                    <button
+                      onClick={() => {}}
                       className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-teal-700 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all duration-300 border border-transparent"
                     >
                       <svg
@@ -63,23 +53,18 @@ const AppliedJobs = () => {
                           d="M12 4v16m8-8H4"
                         />
                       </svg>
-                      Apply more
-                    </Link>
+                      Post more
+                    </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {appliedJobs.length > 0 ? (
-                      appliedJobs.map((job) => (
+                    {postedJobs.length > 0 ? (
+                      postedJobs.map((job) => (
                         <Link to={`/jobs/${job.id}`} key={job.id}>
-                          <AppliedJobTable
-                            key={job.job_id}
-                            job={job}
-                            appliedJobs={appliedJobs}
-                            setAppliedJobs={setAppliedJobs}
-                          />
+                          <JobCard job={job}/>
                         </Link>
                       ))
                     ) : (
-                      <p>Zero jobs applied</p>
+                      <p>Zero Job posts</p>
                     )}
                   </div>
                 </div>
@@ -92,4 +77,4 @@ const AppliedJobs = () => {
   );
 };
 
-export default AppliedJobs;
+export default PostedJobs;

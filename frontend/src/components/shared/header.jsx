@@ -10,7 +10,8 @@ const Header = () => {
   const [signupDialog, setSignupDialog] = useState(false);
   const [signinDialog, setSigninDialog] = useState(false);
   const [forgotPassDialog, setforgotPassDialog] = useState(false);
-  const { isLoggedin, setIsloggedin, setSaveJobList } = useContext(jobContext);
+  const { isLoggedin, user_type, setIsloggedin, setSaveJobList } =
+    useContext(jobContext);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -61,18 +62,22 @@ const Header = () => {
                     Home
                   </Link>
                 </li>
-                  <li>
-                    <Link
-                      to='/Jobs'
-                      className="nav-link text-gray-700 hover:text-blue-600 font-medium whitespace-nowrap"
-                    >
-                      Jobs
-                    </Link>
-                  </li>
                 <li>
                   <Link
-                    to="/account/profile"
+                    to="/Jobs"
                     className="nav-link text-gray-700 hover:text-blue-600 font-medium whitespace-nowrap"
+                  >
+                    Jobs
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="nav-link text-gray-700 hover:text-blue-600 font-medium whitespace-nowrap"
+                    to={
+                      user_type === "job_seeker"
+                        ? "/account/job_seeker/profile"
+                        : "/account/employer/profile"
+                    }
                   >
                     Profile
                   </Link>

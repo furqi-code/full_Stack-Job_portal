@@ -13,6 +13,7 @@ const forgot = require("./router/forgotPassword");
 const isLoggedin = require("./router/auth-status");
 const jobs = require("./router/joblist");
 const job_seeker = require("./router/job-seeker");
+const employer = require("./router/employer");
 
 app.use('/uploads', express.static('uploads'));
 app.use(express.json());
@@ -34,6 +35,7 @@ app.use('/auth/status', isLoggedin)  // to set the state in JobContextProvider
 app.use('/joblist', jobs);
 // Protected routes
 app.use('/account/job_seeker', job_seeker);
+app.use('/account/employer', employer);
 
 
 app.listen(PORT, function () {

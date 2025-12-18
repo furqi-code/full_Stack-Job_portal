@@ -9,42 +9,74 @@ import { Link, useNavigate } from "react-router";
 import { jobContext } from "../../store/jobContext";
 import axios from "axios";
 
-const Sidebar = ({name, profilePic, setName, setProfilePic}) => {
-  const { setIsloggedin, setSaveJobList } = useContext(jobContext);
-  const navigate = useNavigate()
+const Sidebar = ({ name, profilePic, setName, setProfilePic }) => {
+  const { setIsloggedin, setSaveJobList, user_type } = useContext(jobContext);
+  const navigate = useNavigate();
 
-  const tabs = [
-    {
-      id: "profile",
-      url: "/account/profile",
-      name: "My Profile",
-      icon: UserCircleIcon,
-    },
-    {
-      id: "applied",
-      url: "/account/appliedJobs",
-      name: "Applied Jobs",
-      icon: DocumentTextIcon,
-    },
-    {
-      id: "saved",
-      url: "/account/savedJobs",
-      name: "Saved Jobs",
-      icon: HeartIcon,
-    },
-    {
-      id: "password",
-      url: "/account/change-password",
-      name: "Change Password",
-      icon: KeyIcon,
-    },
-  ];
+  let tabs = [];
+  if (user_type === "job_seeker") {
+    tabs = [
+      {
+        id: "profile",
+        url: "/account/job_seeker/profile",
+        name: "My Profile",
+        icon: UserCircleIcon,
+      },
+      {
+        id: "applied",
+        url: "/account/job_seeker/appliedJobs",
+        name: "Applied Jobs",
+        icon: DocumentTextIcon,
+      },
+      {
+        id: "saved",
+        url: "/account/job_seeker/savedJobs",
+        name: "Saved Jobs",
+        icon: HeartIcon,
+      },
+      {
+        id: "password",
+        url: "/account/change-password",
+        name: "Change Password",
+        icon: KeyIcon,
+      },
+    ];
+  }
+
+  if (user_type === "employer") {
+    tabs = [
+      {
+        id: "profile",
+        url: "/account/employer/profile",
+        name: "My Profile",
+        icon: UserCircleIcon,
+      },
+      {
+        id: "Posts",
+        url: "/account/employer/Posted-Jobs",
+        name: "Posted Jobs",
+        icon: DocumentTextIcon,
+      },
+      {
+        id: "applications",
+        url: "/account/employer/Applications",
+        name: "Applications",
+        icon: HeartIcon,
+      },
+      {
+        id: "password",
+        url: "/account/change-password",
+        name: "Change Password",
+        icon: KeyIcon,
+      },
+    ];
+  }
 
   useEffect(() => {
     axios({
       method: "GET",
       url: "http://localhost:1111/account/job_seeker/profile",
-      withCredentials: true
+      withCredentials: true,
     })
       .then((res) => {
         const { name, profile_pic } = res.data.info;
