@@ -66,14 +66,16 @@ CREATE TABLE jobs (
 -- Applications table
 CREATE TABLE applications (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  user_id INT NOT NULL,
+  candidate_id INT NOT NULL,
   job_id INT NOT NULL,
   resume_url VARCHAR(255) NOT NULL,
   status ENUM('pending', 'shortlisted', 'rejected') NOT NULL,
   applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  re_applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  re_applied_at TIMESTAMP NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  updated_by INT NULL,
   FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (candidate_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Saved table

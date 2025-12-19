@@ -196,13 +196,19 @@ router.post('/apply', fileUpload.single('resume'), async (req, res) => {
 
     if (alreadyApplied.length > 0) {
       // Update resume & status
-      const current_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      function getMySQLLocalDateTime() {
+        const date = new Date();
+        const offsetMs = date.getTimezoneOffset() * 60000; // minutes -> ms
+        const local = new Date(date.getTime() - offsetMs); // shift from UTC to local
+        return local.toISOString().slice(0, 19).replace('T', ' ');
+      }
+      const current_time = getMySQLLocalDateTime();
       const resume = `${SERVER_BASE_URL}/uploads/resumes_pdf/${req.file.filename}`;
       await executeQuery('UPDATE applications SET resume_url = ?, status = ?, re_applied_at = ? WHERE id = ?',
         [resume, 'pending', current_time, alreadyApplied[0].id]);
       return res.status(200).send({ message: "Application updated with new resume" });
       
-      // OR reject duplicate / re-apply
+      // OR reject re-apply / duplicate
       // return res.status(409).send({ message: "Application already exists for this job" });
     }
 
