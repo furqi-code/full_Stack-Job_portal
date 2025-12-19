@@ -73,19 +73,19 @@ router.patch("/profile", fileUpload.single('profile_pic'), async (req, res) => {
 router.get("/applications", async (req, res) => {
   try {
     const { user_id } = req; 
-
+    // you can get job__seeker's id from users, profile, or applications table
     const rows = await executeQuery(
-      `SELECT a.applied_at, a.resume_url,
+      `SELECT a.resume_url, a.applied_at, a.job_id, a.candidate_id, 
         j.title AS job_title, j.company, j.location, j.work_mode,
-        p.id AS profile_id, p.name, p.phone, p.profile_pic,
+        p.name, p.phone, p.profile_pic,
         u.email 
        FROM applications a
        INNER JOIN jobs j ON a.job_id = j.id
-       INNER JOIN profiles p ON a.user_id = p.user_id
-       INNER JOIN users u ON a.user_id = u.id
-       WHERE j.employer_id = ?
+       INNER JOIN profiles p ON a.candidate_id = p.user_id
+       INNER JOIN users u ON a.candidate_id = u.id
+       WHERE j.employer_id = ? AND a.status = ?
        ORDER BY a.applied_at DESC`,
-      [user_id]
+      [user_id, 'pending']
     );
 
     res.status(200).send({ data: rows });
@@ -94,5 +94,16 @@ router.get("/applications", async (req, res) => {
   }
 });
 
+router.patch('/selection', async (req, res) => {
+    try{
+      const { user_id } = req;
+      const { candidate_status, candidate_id, job_id } = req.query;
+      await executeQuery(`update applications set status = ?, updated_by = ? where candidate_id = ? AND job_id = ?`, 
+        [candidate_status, user_id, candidate_id, job_id])  
+      res.status(200).send({ message: 'Candidate selection done' });
+    }catch(err){
+      res.status(500).send({ message: err.message || "Something went wrong" });   
+    }
+})
 
 module.exports = router;

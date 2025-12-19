@@ -57,7 +57,7 @@ const Applications = () => {
                     {applications.length > 0 ? (
                       applications.map((candidate) => (
                         <CandidateTable
-                          key={candidate.profile_id}
+                          key={candidate.candidate_id}
                           candidate={candidate}
                           applications={applications}
                           setApplications={setApplications}
@@ -75,6 +75,7 @@ const Applications = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="bottom-right"/>
     </>
   );
 };

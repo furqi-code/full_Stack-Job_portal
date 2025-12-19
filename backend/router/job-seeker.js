@@ -191,22 +191,23 @@ router.post('/apply', fileUpload.single('resume'), async (req, res) => {
     }
 
     const alreadyApplied = await executeQuery(
-      'SELECT id FROM applications WHERE user_id = ? AND job_id = ?',
+      'SELECT id FROM applications WHERE candidate_id = ? AND job_id = ?',
       [user_id, job_id]);
 
     if (alreadyApplied.length > 0) {
       // Update resume & status
+      const current_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
       const resume = `${SERVER_BASE_URL}/uploads/resumes_pdf/${req.file.filename}`;
-      await executeQuery('UPDATE applications SET resume_url = ?, status = ? WHERE id = ?',
-        [resume, 'pending', alreadyApplied[0].id]);
+      await executeQuery('UPDATE applications SET resume_url = ?, status = ?, re_applied_at = ? WHERE id = ?',
+        [resume, 'pending', current_time, alreadyApplied[0].id]);
       return res.status(200).send({ message: "Application updated with new resume" });
       
-      // OR reject duplicate 
+      // OR reject duplicate / re-apply
       // return res.status(409).send({ message: "Application already exists for this job" });
     }
 
     const resume = `${SERVER_BASE_URL}/uploads/resumes_pdf/${req.file.filename}`;
-    await executeQuery('INSERT INTO applications(user_id, job_id, resume_url, status) VALUES(?, ?, ?, ?)',
+    await executeQuery('INSERT INTO applications(candidate_id, job_id, resume_url, status) VALUES(?, ?, ?, ?)',
       [user_id, job_id, resume, 'pending']);
     res.status(201).send({ message: "Application submitted successfully" });
   } catch (err) {
@@ -224,7 +225,7 @@ router.get("/appliedJobs", async (req, res) => {
     const appliedJobs = await executeQuery(`SELECT j.id, j.company, j.title AS job_role, j.location, a.status, j.companyLogo, j.work_mode
       FROM applications a
       INNER JOIN jobs j ON a.job_id = j.id
-      WHERE a.user_id = ?
+      WHERE a.candidate_id = ?
       ORDER BY a.applied_at DESC`, [user_id]);  
     if (appliedJobs.length === 0) {
       return res.status(404).send({ data: [] });
@@ -249,7 +250,7 @@ router.get("/appliedJob", async (req, res) => {
     if (!job_id) {
       return res.status(400).send({ message: "job_id query parameter is required" });
     }
-    const appliedJob = await executeQuery(`SELECT * FROM applications WHERE user_id = ? AND job_id = ?`, [user_id, job_id]);
+    const appliedJob = await executeQuery(`SELECT * FROM applications WHERE candidate_id = ? AND job_id = ?`, [user_id, job_id]);
     if (appliedJob.length === 0) {
       return res.status(404).send({ data: [] });
     }

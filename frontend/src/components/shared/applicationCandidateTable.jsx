@@ -1,4 +1,7 @@
-const CandidateTable = ({ candidate }) => {
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+
+const CandidateTable = ({ candidate, setApplications }) => {
   const getModeColor = (mode) => {
     const modes = {
       Hybrid: "bg-yellow-100 text-yellow-700 border-yellow-200",
@@ -8,10 +11,42 @@ const CandidateTable = ({ candidate }) => {
     return modes[mode] || "bg-gray-100 text-gray-700 border-gray-200";
   };
 
+  const candidateSelection = (candidate_status, candidate_id, job_id) => {
+    axios({
+      method: "PATCH",
+      url: "http://localhost:1111/account/employer/selection",
+      withCredentials: true,
+      params: { candidate_status, candidate_id, job_id },
+    })
+      .then((res) => {
+        toast.info(`this candidate got ${candidate_status}`);
+        // could have called an api to get fresh data but better approach i directly change the state after the operation
+        // keeping all applications except the one that was just shortlisted / rejected
+        setApplications((prevApplications) => {
+          return prevApplications.filter((app) => {
+            const isSameCandidate = app.candidate_id === candidate_id && app.job_id === job_id;
+            return !isSameCandidate;
+          });
+        });
+
+        // other approach (unnecessary)
+        // to see the updated candidates also but then you have to remove a.status=? in WHERE clause in employer.js
+        // to get all the application you have/had from candidates
+        // setApplications((prevApplications) =>
+        //   prevApplications.map((app) =>
+        //     app.profile_id === candidate_id && app.job_id === job_id
+        //       ? { ...app, status: candidate_status }
+        //       : app
+        //   )
+        // );
+      })
+      .catch((error) => {
+        console.error("Error while candidate selection:", error);
+      });
+  };
+
   return (
-    /* Updated the className below with your specific color combo while preserving layout */
     <div className="group flex flex-col p-5 gap-4 rounded-xl transition-all duration-200 border border-gray-200/50 hover:border-blue-300 hover:shadow-sm hover:shadow-black/10 bg-gradient-to-r from-amber-900/10 via-white/95 to-blue-50/90">
-      
       {/* Top Section: Logo & Details */}
       <div className="flex items-start space-x-4 w-full">
         <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
@@ -35,7 +70,9 @@ const CandidateTable = ({ candidate }) => {
               {candidate.name}
             </h4>
             <div
-              className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-medium border shrink-0 ${getModeColor(candidate.work_mode)}`}
+              className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-medium border shrink-0 ${getModeColor(
+                candidate.work_mode
+              )}`}
             >
               {candidate.work_mode}
             </div>
@@ -97,7 +134,16 @@ const CandidateTable = ({ candidate }) => {
           Resume
         </a>
 
-        <button className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 border border-emerald-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 flex-1 h-10">
+        <button
+          onClick={() =>
+            candidateSelection(
+              "shortlisted",
+              candidate.candidate_id,
+              candidate.job_id
+            )
+          }
+          className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 border border-emerald-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 flex-1 h-10"
+        >
           <svg
             className="w-3.5 h-3.5 mr-1 sm:mr-0.5 flex-shrink-0"
             fill="currentColor"
@@ -112,7 +158,16 @@ const CandidateTable = ({ candidate }) => {
           <span className="hidden sm:inline">Shortlist</span>
         </button>
 
-        <button className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-red-700 bg-red-100 hover:bg-red-200 border border-red-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 flex-1 h-10">
+        <button
+          onClick={() =>
+            candidateSelection(
+              "rejected",
+              candidate.candidate_id,
+              candidate.job_id
+            )
+          }
+          className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-red-700 bg-red-100 hover:bg-red-200 border border-red-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 flex-1 h-10"
+        >
           <svg
             className="w-3.5 h-3.5 mr-1 sm:mr-0.5 flex-shrink-0"
             fill="currentColor"

@@ -78,7 +78,8 @@ router.get("/applicants", async (req, res) => {
     if (!job_id) {
       return res.status(400).send({ message: "job_id query parameter is required" });
     }
-    const totalApplicants = await executeQuery(`SELECT user_id FROM applications WHERE job_id = ?`, [job_id]);
+    const totalApplicants = await executeQuery(`SELECT candidate_id FROM applications WHERE job_id = ? AND status = ?`,
+      [job_id, 'pending']);
     if (totalApplicants.length === 0) {
       return res.status(404).send({ data: [] });
     }

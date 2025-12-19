@@ -21,6 +21,7 @@ CREATE TABLE profiles (
   address TEXT,
   gender ENUM('Male', 'Female', 'Other') NOT NULL,
   job_role VARCHAR(255),
+  total_experience  INT,
   about TEXT,
   profile_pic TEXT,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -70,7 +71,7 @@ CREATE TABLE applications (
   resume_url VARCHAR(255) NOT NULL,
   status ENUM('pending', 'shortlisted', 'rejected') NOT NULL,
   applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  re_applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -117,6 +118,7 @@ select * from user_skills;
 select * from jobs;
 select * from savedJobs;
 select * from applications;
+
 
 drop table users;
 drop table jobs;
