@@ -176,7 +176,7 @@ const Jobs = () => {
           </div>
         </div>
       </div>
-      <ToastContainer position="bottom-left" />
+      <ToastContainer position="top-right" />
     </>
   );
 };

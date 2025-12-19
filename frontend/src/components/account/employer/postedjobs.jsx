@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import JobForm from "./jobform";
 import JobCard from "../../shared/jobCard";
 import Sidebar from "../sidebar";
 import axios from "axios";
 
 const PostedJobs = () => {
   const [postedJobs, setPostedJobs] = useState([]);
+  const [showForm, setshowForm] = useState(false);
   // used in sidebar
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
 
-  useEffect(() => {
-    
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -33,10 +33,10 @@ const PostedJobs = () => {
                 <div className="bg-white shadow rounded-lg p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-lg font-medium text-gray-900">
-                      Posted Jobs
+                      {!showForm ? "Posted Jobs" : "Fill up the required fields"}
                     </h3>
-                    <button
-                      onClick={() => {}}
+                    {!showForm && <button
+                      onClick={() => setshowForm(true)}
                       className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-teal-700 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all duration-300 border border-transparent"
                     >
                       <svg
@@ -54,13 +54,15 @@ const PostedJobs = () => {
                         />
                       </svg>
                       Post more
-                    </button>
+                    </button>}
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {postedJobs.length > 0 ? (
+                    {showForm ? (
+                      <JobForm setshowForm={setshowForm} />
+                    ) : postedJobs.length > 0 ? (
                       postedJobs.map((job) => (
                         <Link to={`/jobs/${job.id}`} key={job.id}>
-                          <JobCard job={job}/>
+                          <JobCard job={job} />
                         </Link>
                       ))
                     ) : (

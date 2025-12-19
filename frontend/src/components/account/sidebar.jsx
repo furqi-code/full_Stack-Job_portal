@@ -147,7 +147,7 @@ const Sidebar = ({ name, profilePic, setName, setProfilePic }) => {
         <div className="pt-4 mt-6 border-t border-gray-200">
           <button
             onClick={logout}
-            className="w-full flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="w-full flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

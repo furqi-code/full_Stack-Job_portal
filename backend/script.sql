@@ -92,12 +92,12 @@ INSERT INTO jobs (
   employer_id, title, description, company, type, work_mode, location,
   experience_min, experience_max, salary_min, salary_max, companyLogo, created_at, expires_at
 ) VALUES
-(1, 'FullStack Developer', 'FullStack Developer role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Hybrid', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
+(2, 'FullStack Developer', 'FullStack Developer role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Hybrid', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
 (1, 'Frontend Developer', 'Frontend Developer role based in Bangalore with salary range 4L to 6L.', 'Facebook', 'Part-time', 'Remote', 'Bangalore', 0, 5, 4, 6, 'https://logo.clearbit.com/facebook.com', CURRENT_TIMESTAMP, NULL),
 (1, 'Backend Developer', 'Backend Developer role based in Hyderabad with salary range 4L to 6L.', 'Uber', 'Contract', 'On-site', 'Hyderabad', 0, 5, 4, 6, 'https://logo.clearbit.com/uber.com', CURRENT_TIMESTAMP, NULL),
-(1, 'Network Engineer', 'Network Engineer role based in Kolkata with salary range 7L to 11L.', 'Google', 'Full-time', 'On-site', 'Kolkata', 0, 5, 7, 11, 'https://logo.clearbit.com/google.com', CURRENT_TIMESTAMP, NULL),
+(2, 'Network Engineer', 'Network Engineer role based in Kolkata with salary range 7L to 11L.', 'Google', 'Full-time', 'On-site', 'Kolkata', 0, 5, 7, 11, 'https://logo.clearbit.com/google.com', CURRENT_TIMESTAMP, NULL),
 (1, 'UX Researcher', 'UX Researcher role based in Amsterdam with salary range €55K to €75K.', 'Booking.com', 'Full-time', 'Remote', 'Amsterdam', 2, 6, 55, 75, 'https://logo.clearbit.com/booking.com', CURRENT_TIMESTAMP, NULL),
-(1, 'Sales Executive', 'Sales Executive role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Remote', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
+(2, 'Sales Executive', 'Sales Executive role based in Delhi NCR with salary range 12L to 15L.', 'Flipkart', 'Full-time', 'Remote', 'Delhi NCR', 0, 5, 12, 15, 'https://logo.clearbit.com/flipkart.com', CURRENT_TIMESTAMP, NULL),
 (1, 'Data Analyst', 'Data Analyst role based in Bangalore with salary range 7L to 11L.', 'Accenture', 'Part-time', 'On-site', 'Bangalore', 0, 5, 7, 11, 'https://logo.clearbit.com/accenture.com', CURRENT_TIMESTAMP, NULL),
 (1, 'UX Designer', 'UX Designer role based in Kashmir with salary range 12L to 15L.', 'Wipro', 'Contract', 'Hybrid', 'Kashmir', 0, 5, 12, 15, 'https://logo.clearbit.com/wipro.com', CURRENT_TIMESTAMP, NULL),
 (1, 'Product Manager', 'Product Manager role based in Hyderabad with salary range 16L to 22L.', 'Adobe', 'Full-time', 'Remote', 'Hyderabad', 0, 5, 16, 22, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_ptlo3aGM1csGULAvNxzL2jeC-ibonON0cigmkce2BVwh8WA9dQddaqMJ5Od3ezAyNHU&usqp=CAU', CURRENT_TIMESTAMP, NULL),
