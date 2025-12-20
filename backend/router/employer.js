@@ -3,7 +3,7 @@ const router = express.Router();
 const { executeQuery } = require("../mySqldb/Query");
 const { Auth } = require("../Authmiddleware");
 const { fileUpload } = require("../multerMiddleware");
-const SERVER_BASE_URL = process.env.SERVER_BASE_URL || 'http://localhost:1111';  // req to get profile_pic accessible in frontend folder to use in img src=''
+const SERVER_BASE_URL = process.env.SERVER_BASE_URL || 'http://localhost:1111';  // req to get companyLogo accessible in frontend folder to use in img src=''
 
 router.use(Auth);
 
@@ -66,6 +66,56 @@ router.patch("/profile", fileUpload.single('profile_pic'), async (req, res) => {
     res.status(500).send({
       message: "Something went wrong",
       error: err.message
+    });
+  }
+});
+
+router.get("/myJobs", async (req, res) => {
+  try {
+    const { user_id } = req;
+    if (!user_id) {
+      return res.status(400).send({ message: "user_id parameter is required" });
+    }
+    const postedJobs = await executeQuery(`SELECT * FROM jobs WHERE employer_id = ?`, [user_id]);
+    if (postedJobs.length === 0) {
+      return res.status(404).send({ data: [] });
+    }
+    res.status(200).send({ data: postedJobs });
+  } catch (err) {
+    console.error("Error fetching your posted Jobs: ", err);
+    res.status(500).send({
+      message: err.message || "Something went wrong",
+    });
+  }
+});
+
+router.post('/addJob', fileUpload.single('companyLogo'), async (req, res) => {
+  try {
+    const { user_id } = req; 
+    const { title, description, company, type, work_mode, location,
+      experience_min, experience_max, salary_min, salary_max } = req.body;
+    console.log("body\n", req.body, "\nfile obj", req.file);
+
+    const logoPath = req.file ? `${SERVER_BASE_URL}/uploads/companyLogo/${req.file.filename}` : null;
+
+    const insert_Job = await executeQuery(
+      `INSERT INTO jobs (employer_id, title, description, company, type, work_mode, location,
+       experience_min, experience_max, salary_min, salary_max, expires_at, companyLogo)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [ user_id, title, description, company, type, work_mode, location,
+        experience_min, experience_max, salary_min, salary_max, null, logoPath ]
+    );
+
+    if (insert_Job.insertId > 0) {
+      return res.status(201).send({ message: "Job posted successfully" });
+    } else {
+      return res.status(400).send({ message: "Failed to create this job" });
+    }
+  } catch (err) {
+    console.error("Job insert error:", err);
+    res.status(500).send({
+      message: "Something went wrong",
+      error: err.message,
     });
   }
 });

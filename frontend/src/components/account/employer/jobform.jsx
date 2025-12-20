@@ -16,7 +16,7 @@ const JobForm = ({ setshowForm }) => {
   const salaryMinRef = useRef();
   const salaryMaxRef = useRef();
   const companyLogoRef = useRef();
-  const expiresAtRef = useRef();
+  // const expiresAtRef = useRef();
 
   const [logoFile, setLogoFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -56,7 +56,7 @@ const JobForm = ({ setshowForm }) => {
     formData.append("experience_max", experienceMaxRef.current.value);
     formData.append("salary_min", salaryMinRef.current.value);
     formData.append("salary_max", salaryMaxRef.current.value);
-    formData.append("expires_at", expiresAtRef.current.value);
+    // formData.append("expires_at", expiresAtRef.current.value);
 
     try {
       const res = await axios.post(
@@ -260,7 +260,7 @@ const JobForm = ({ setshowForm }) => {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <label className="block mb-1 font-medium">
             Expires At (optional)
           </label>
@@ -269,7 +269,7 @@ const JobForm = ({ setshowForm }) => {
             ref={expiresAtRef}
             className="input input-bordered w-full border-yellow-400 bg-blue-50 focus:ring-yellow-400 focus:border-yellow-400"
           />
-        </div>
+        </div> */}
 
         <div className="flex justify-end gap-2">
           <button

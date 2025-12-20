@@ -12,7 +12,19 @@ const PostedJobs = () => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/account/employer/myJobs",
+      withCredentials: true
+    })
+      .then((res) => {
+        setPostedJobs(res.data.data); 
+      })
+      .catch((error) => {
+        console.error("Error fetching your posted Jobs:", error);
+      });
+  }, [showForm]);
 
   return (
     <>

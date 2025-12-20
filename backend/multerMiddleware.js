@@ -6,6 +6,8 @@ const storage = multer.diskStorage({
       return cb(null, "./uploads/profile_pics");
     else if (file.fieldname === 'resume')
       return cb(null, "./uploads/resumes_pdf");
+    else if (file.fieldname === 'companyLogo')
+      return cb(null, "./uploads/companyLogo")
   },
   filename: function (req, file, cb) {
     return cb(null, Date.now() + "-" + file.originalname);
@@ -13,7 +15,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if(file.fieldname === 'profile_pic'){
+  if(file.fieldname === 'profile_pic' || file.fieldname === 'companyLogo'){
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
