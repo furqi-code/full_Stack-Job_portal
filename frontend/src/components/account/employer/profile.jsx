@@ -15,6 +15,7 @@ const Employer_profile = () => {
   const [totalApplications, setTotalApplications] = useState(0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [imgPreview, setImgPreview] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -38,7 +39,7 @@ const Employer_profile = () => {
           address: address || "",
           gender: gender || "",
         });
-        
+
         setDate(created_at);
         setProfilePic(profile_pic);
         setName(name);
@@ -48,14 +49,14 @@ const Employer_profile = () => {
         console.log("Couldn't fetch user profile", err);
         setError("Failed to load profile data.");
       });
-  }, [success]); 
+  }, [success]);
 
   // Account statistics data fetch
   useEffect(() => {
     axios({
       method: "GET",
       url: "http://localhost:1111/account/employer/myJobs",
-      withCredentials: true
+      withCredentials: true,
     })
       .then((res) => {
         if (res.data.data.length > 0) setTotalPostedJobs(res.data.data.length);
@@ -63,27 +64,39 @@ const Employer_profile = () => {
       .catch((err) => {
         console.log("Couldn't fetch user posted jobs", err);
       });
-  },[]);
+  }, []);
 
   useEffect(() => {
     axios({
       method: "GET",
       url: `http://localhost:1111/account/employer/applications`,
-      withCredentials: true
+      withCredentials: true,
     })
       .then((res) => {
-        if (res.data.data.length > 0) setTotalApplications(res.data.data.length);
+        if (res.data.data.length > 0)
+          setTotalApplications(res.data.data.length);
       })
       .catch((err) => {
         console.log("Error while fetching your applications");
       });
-  },[]);
-  
+  }, []);
+
+  const handleImageInputChange = (e) => {
+    // const file = e.target.files[0];
+    const file = imageFileRef.current.files[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        return setError("Please select a valid image file");
+      }
+      setImgPreview(file);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -97,7 +110,7 @@ const Employer_profile = () => {
     formDataToSend.append("phone", formData.phone);
     formDataToSend.append("address", formData.address);
     formDataToSend.append("gender", formData.gender);
-    
+
     if (imageFileRef.current?.files.length > 0) {
       formDataToSend.append("profile_pic", imageFileRef.current.files[0]);
     }
@@ -114,6 +127,7 @@ const Employer_profile = () => {
       .then((res) => {
         console.log("Profile updated", res.data.message);
         imageFileRef.current.value = "";
+        setImgPreview("");
         setSuccess("Profile updated successfully.");
         setTimeout(() => {
           setSuccess("");
@@ -174,11 +188,11 @@ const Employer_profile = () => {
               </div>
 
               <form onSubmit={handleSaveChanges} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-1 flex flex-col items-center">
+                <div className="lg:col-span-1 flex flex-col items-center space-y-3">
                   <div className="relative group">
                     <div className="aspect-square w-48 h-48 rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50 bg-gradient-to-br from-blue-500/20 to-purple-500/20">
                       <img
-                        src={profilePic || "/api/placeholder/480/480"}
+                        src={profilePic || imgPreview}
                         alt="Profile picture"
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
@@ -194,18 +208,50 @@ const Employer_profile = () => {
                         id="profile-pic"
                         type="file"
                         ref={imageFileRef}
+                        onChange={handleImageInputChange}
                         accept="image/*"
                         className="sr-only"
                       />
                     </label>
                   </div>
+
+                  {imgPreview && (
+                    <div className="w-full max-w-[12rem] flex items-center justify-between p-3 bg-stone-50 border border-stone-200 rounded-lg shadow-sm">
+                      <span className="text-sm text-stone-800 font-medium flex-1 pr-2 line-clamp-2">
+                        {imgPreview.name}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setImgPreview("")}
+                        className="p-1.5 hover:bg-red-100 hover:text-red-700 rounded-lg transition-all duration-200 flex items-center justify-center hover:scale-110"
+                        title="Remove file"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Form Fields */}
                 <div className="lg:col-span-2 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                      >
                         Full Name
                       </label>
                       <input
@@ -220,7 +266,10 @@ const Employer_profile = () => {
                     </div>
 
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label
+                        htmlFor="phone"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                      >
                         Phone Number
                       </label>
                       <input
@@ -231,13 +280,17 @@ const Employer_profile = () => {
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
                         placeholder="+91 98765 43210"
+                        required
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="gender" className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label
+                        htmlFor="gender"
+                        className="block text-sm font-semibold text-gray-700 mb-2"
+                      >
                         Gender
                       </label>
                       <select
@@ -256,7 +309,10 @@ const Employer_profile = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label
+                      htmlFor="address"
+                      className="block text-sm font-semibold text-gray-700 mb-2"
+                    >
                       Address
                     </label>
                     <input
@@ -266,7 +322,8 @@ const Employer_profile = () => {
                       value={formData.address}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
-                      placeholder="City, State, Country"
+                      placeholder="City, Country"
+                      required  
                     />
                   </div>
 
