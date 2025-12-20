@@ -123,7 +123,7 @@ export function SignupDialog({ setSigninDialog, setSignupDialog }) {
                     />
                     <span className="text-xs font-semibold">Employer</span>
                   </label>
-                   <label className={`cursor-pointer border rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all ${role === 'admin' ? 'border-slate-800 bg-slate-50 text-slate-800' : 'border-slate-200 hover:border-slate-300 text-slate-500'}`}>
+                  {/* <label className={`cursor-pointer border rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all ${role === 'admin' ? 'border-slate-800 bg-slate-50 text-slate-800' : 'border-slate-200 hover:border-slate-300 text-slate-500'}`}>
                     <input 
                       type="radio" 
                       name="role" 
@@ -133,7 +133,7 @@ export function SignupDialog({ setSigninDialog, setSignupDialog }) {
                       className="hidden" 
                     />
                     <span className="text-xs font-semibold">Admin</span>
-                  </label>
+                  </label> */}
                 </div>
               </div>
 

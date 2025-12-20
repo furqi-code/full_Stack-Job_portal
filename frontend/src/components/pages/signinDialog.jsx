@@ -122,7 +122,7 @@ export function SigninDialog({
                     </span>
                   </label>
 
-                  <label className="inline-flex items-center cursor-pointer">
+                  {/* <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="radio"
                       name="role"
@@ -132,7 +132,7 @@ export function SigninDialog({
                       onChange={(e) => setRole(e.target.value)}
                     />
                     <span className="ml-2 text-sm text-slate-700">Admin</span>
-                  </label>
+                  </label> */}
                 </div>
               </div>
 
