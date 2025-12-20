@@ -13,9 +13,31 @@ import {
 import { useState, useRef } from "react";
 import axios from "axios";
 
-export default function ApplyDialog({ openDialog, setOpenDialog, job_id, success, setSuccess }) {
+export default function ApplyDialog({
+  openDialog,
+  setOpenDialog,
+  job_id,
+  success,
+  setSuccess,
+}) {
   const resumeFileRef = useRef(null);
+  const [resumePreview, setResumePreview] = useState("");
   const [error, setError] = useState("");
+
+  const handleResumeInputChange = (e) => {
+    setError("");
+    // const file = e.target.files[0];
+    const file = resumeFileRef.current.files[0];
+    if (file) {
+      if (!file.type.startsWith("application/")) {
+        return setError("Please select a valid PDF / DOC file");
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        return setError("File size must be under 5MB");
+      }
+      setResumePreview(file);
+    }
+  };
 
   const handleApplyJob = () => {
     setError("");
@@ -38,6 +60,7 @@ export default function ApplyDialog({ openDialog, setOpenDialog, job_id, success
       .then((res) => {
         console.log("resume uploaded", res.data.message);
         resumeFileRef.current.value = "";
+        setResumePreview("");
         setSuccess("Resume uploaded successfully");
         setTimeout(() => {
           setSuccess("");
@@ -48,11 +71,15 @@ export default function ApplyDialog({ openDialog, setOpenDialog, job_id, success
         console.log("Upload error", err);
         setError("Failed to upload your resume.");
       });
-  }
+  };
 
   return (
     <div>
-      <Dialog open={openDialog} onClose={setOpenDialog} className="relative z-50">
+      <Dialog
+        open={openDialog}
+        onClose={setOpenDialog}
+        className="relative z-50"
+      >
         <DialogBackdrop
           transition
           className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -86,7 +113,9 @@ export default function ApplyDialog({ openDialog, setOpenDialog, job_id, success
             </div>
 
             {/* Upload Area */}
-              <div className="p-8 data-closed:hidden">
+            <div className="p-8 data-closed:hidden">
+              {!resumePreview ? (
+                // drag-and-drop area
                 <div className="group">
                   <label
                     htmlFor="resume"
@@ -105,48 +134,96 @@ export default function ApplyDialog({ openDialog, setOpenDialog, job_id, success
                       type="file"
                       id="resume"
                       ref={resumeFileRef}
+                      onChange={handleResumeInputChange}
                       accept=".pdf,.doc,.docx"
                       className="sr-only"
                       required
                     />
                   </label>
                 </div>
-                <p className="mt-3 text-xs text-gray-500 text-center">
-                  PDF, DOC, DOCX up to 5MB
-                </p>
-              </div>
-
-              {error && (
-                <p className="mt-2 text-sm text-red-400 text-center">{error}</p>
-              )}
-              {success && (
-                <p className="mt-2 text-sm text-green-400 text-center">{success}</p>
-              )}
-
-              <div className="px-8 py-6 bg-black/20 border-t border-white/10 backdrop-blur-sm rounded-b-2xl">
-                <div className="flex justify-end gap-3">
-                  <button
-                    type="button"
-                    data-autofocus
-                    onClick={() => setOpenDialog(false)}
-                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-white/5 hover:bg-white/20 sm:mt-0 sm:w-auto"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    form="resume-form"
-                    onClick={handleApplyJob}
-                    className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-400 sm:ml-3 sm:w-auto"
-                  >
-                    Upload Resume
-                  </button>
+              ) : (
+                // Preview file area
+                <div className="group">
+                  <div className="p-6 bg-gradient-to-r from-emerald-500/10 via-blue-500/5 to-indigo-500/10 backdrop-blur-xl border-2 border-emerald-400/20 rounded-3xl shadow-2xl ring-1 ring-emerald-400/30 hover:shadow-3xl hover:shadow-emerald-500/20 transition-all duration-500 hover:scale-[1.02]">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400/20 to-blue-400/20 border border-emerald-400/30 backdrop-blur-sm p-2">
+                          <DocumentIcon className="h-7 w-7 text-emerald-400 group-hover:scale-110 transition-transform duration-200" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-lg font-semibold text-white truncate group-hover:underline group-hover:underline-offset-2">
+                            {resumePreview.name}
+                          </p>
+                          <p className="text-sm text-emerald-300/80 font-mono mt-0.5">
+                            {(resumePreview.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResumePreview("");
+                          if (resumeFileRef.current)
+                            resumeFileRef.current.value = "";
+                        }}
+                        className="p-2 hover:bg-white/20 hover:text-white rounded-xl backdrop-blur-sm transition-all duration-200 hover:scale-110 flex items-center justify-center group/remove hover:shadow-md"
+                        title="Change file"
+                      >
+                        <svg
+                          className="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              )}
+              <p className="mt-3 text-xs text-gray-500 text-center">
+                PDF, DOC, DOCX up to 5MB
+              </p>
+            </div>
+
+            {error && (
+              <p className="mt-2 text-sm text-red-400 text-center">{error}</p>
+            )}
+            {success && (
+              <p className="mt-2 text-sm text-green-400 text-center">
+                {success}
+              </p>
+            )}
+
+            <div className="px-8 py-6 bg-black/20 border-t border-white/10 backdrop-blur-sm rounded-b-2xl">
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  data-autofocus
+                  onClick={() => setOpenDialog(false)}
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-white/5 hover:bg-white/20 sm:mt-0 sm:w-auto"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="resume-form"
+                  onClick={handleApplyJob}
+                  className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-400 sm:ml-3 sm:w-auto"
+                >
+                  Upload Resume
+                </button>
               </div>
+            </div>
           </DialogPanel>
         </div>
       </Dialog>
     </div>
-    
   );
 }

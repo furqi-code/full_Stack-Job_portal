@@ -87,11 +87,15 @@ const Job_seeker_profile = () => {
   },[]);
 
   const handleImageInputChange = (e) => {
+    setError("");
     // const file = e.target.files[0];
     const file = imageFileRef.current.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
         return setError("Please select a valid image file");
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        return setError("image file size must be under 5MB");
       }
       setImgPreview(file);
     }
