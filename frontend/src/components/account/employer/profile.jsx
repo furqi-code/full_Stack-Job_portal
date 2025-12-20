@@ -49,6 +49,35 @@ const Employer_profile = () => {
         setError("Failed to load profile data.");
       });
   }, [success]); 
+
+  // Account statistics data fetch
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: "http://localhost:1111/account/employer/myJobs",
+      withCredentials: true
+    })
+      .then((res) => {
+        if (res.data.data.length > 0) setTotalPostedJobs(res.data.data.length);
+      })
+      .catch((err) => {
+        console.log("Couldn't fetch user posted jobs", err);
+      });
+  },[]);
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `http://localhost:1111/account/employer/applications`,
+      withCredentials: true
+    })
+      .then((res) => {
+        if (res.data.data.length > 0) setTotalApplications(res.data.data.length);
+      })
+      .catch((err) => {
+        console.log("Error while fetching your applications");
+      });
+  },[]);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
