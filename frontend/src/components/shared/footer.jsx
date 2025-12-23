@@ -1,45 +1,45 @@
 const Footer = () => {
   return (
     <>
-      <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div class="flex items-center mb-4">
+              <div className="flex items-center mb-4">
                 <svg
                   class_utils="h-8 w-auto text-indigo-600 dark:text-indigo-400"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke="currentColor"
-                  class="h-8 w-auto text-indigo-600 dark:text-indigo-400"
+                  className="h-8 w-auto text-indigo-600 dark:text-indigo-400"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
                   />
                 </svg>
-                <span class="ml-2 text-2xl font-bold text-slate-900 dark:text-white">
+                <span className="ml-2 text-2xl font-bold text-slate-900 dark:text-white">
                   JobNest
                 </span>
               </div>
-              <p class="text-slate-500 dark:text-slate-400 text-sm">
+              <p className="text-slate-500 dark:text-slate-400 text-sm">
                 Connecting talent with opportunity. Find your next career move
                 with JobNest.
               </p>
             </div>
 
             <div>
-              <h4 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
                 Quick Links
               </h4>
-              <ul class="space-y-3">
+              <ul className="space-y-3">
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Find Jobs
                   </a>
@@ -47,7 +47,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Post a Job
                   </a>
@@ -55,7 +55,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Companies
                   </a>
@@ -64,14 +64,14 @@ const Footer = () => {
             </div>
 
             <div>
-              <h4 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
                 Legal
               </h4>
-              <ul class="space-y-3">
+              <ul className="space-y-3">
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Privacy Policy
                   </a>
@@ -79,7 +79,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Terms of Service
                   </a>
@@ -87,7 +87,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Cookie Policy
                   </a>
@@ -96,14 +96,14 @@ const Footer = () => {
             </div>
 
             <div>
-              <h4 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
                 Contact
               </h4>
-              <ul class="space-y-3">
+              <ul className="space-y-3">
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     About Us
                   </a>
@@ -111,7 +111,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Contact Support
                   </a>
@@ -119,7 +119,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="#"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
                   >
                     Help Center
                   </a>
@@ -128,34 +128,34 @@ const Footer = () => {
             </div>
           </div>
 
-          <div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center">
-            <p class="text-sm text-slate-500 dark:text-slate-400">
+          <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               &copy; 2025 JobNest. All rights reserved.
             </p>
-            <div class="flex space-x-6 mt-4 md:mt-0">
+            <div className="flex space-x-6 mt-4 md:mt-0">
               <a
                 href="https://www.facebook.com/"
-                class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300"
+                className="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300"
               >
-                <span class="sr-only">Facebook</span>
+                <span className="sr-only">Facebook</span>
                 <svg
-                  class="h-6 w-6"
+                  className="h-6 w-6"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                   aria-hidden="true"
                 >
                   <path
-                    fill-rule="evenodd"
+                    fillRule="evenodd"
                     d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                    clip-rule="evenodd"
+                    clipRule="evenodd"
                   />
                 </svg>
               </a>
               <a
                 href="https://github.com/furqi-code"
-                class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300"
+                className="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300"
               >
-                <span class="sr-only">Github</span>
+                <span className="sr-only">Github</span>
                 <svg
                   className="h-6 w-6"
                   fill="currentColor"
@@ -177,19 +177,19 @@ const Footer = () => {
               </a>
               <a
                 href="https://www.linkedin.com/in/md-furqan-ahmad-81551338b/"
-                class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300"
+                className="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300"
               >
-                <span class="sr-only">LinkedIn</span>
+                <span className="sr-only">LinkedIn</span>
                 <svg
-                  class="h-6 w-6"
+                  className="h-6 w-6"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                   aria-hidden="true"
                 >
                   <path
-                    fill-rule="evenodd"
+                    fillRule="evenodd"
                     d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
-                    clip-rule="evenodd"
+                    clipRule="evenodd"
                   />
                 </svg>
               </a>

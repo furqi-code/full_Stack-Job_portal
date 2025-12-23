@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { Upload } from "lucide-react";
-import "react-toastify/dist/ReactToastify.css";
+import emailjs from "@emailjs/browser";
 import axios from "axios";
 
 const JobForm = ({ setshowForm }) => {
@@ -32,9 +32,33 @@ const JobForm = ({ setshowForm }) => {
     }
   };
 
-  const removeLogo = () => {
-    setLogoFile(null);
-    companyLogoRef.current.value = "";
+  const emailNotify = (candidate_name, candidate_email, employer_name, employer_email) => {
+    const templateParams = {
+      candidate_name,
+      candidate_email,
+      employer_name,
+      employer_email,
+      job_title: titleRef.current.value,
+      company_name: companyRef.current.value,
+      job_location: locationRef.current.value,
+      job_type: typeRef.current.value,
+    };
+    const YOUR_PUBLIC_KEY = "GGQ7I19QO65LFcdZE";
+    const YOUR_SERVICE_ID = "service_32iv888";
+    const YOUR_TEMPLATE_ID = "template_3lgjdsv";
+
+    emailjs
+      .send(YOUR_SERVICE_ID, YOUR_TEMPLATE_ID, templateParams, {
+        publicKey: YOUR_PUBLIC_KEY,
+      })
+      .then(
+        () => {
+          console.log("SUCCESS!");
+        },
+        (error) => {
+          console.log("FAILED...", error.text);
+        }
+      );
   };
 
   const handleSubmit = async (e) => {
@@ -70,6 +94,22 @@ const JobForm = ({ setshowForm }) => {
         }
       );
 
+      const usersResponse = await axios.get(
+        "http://localhost:1111/account/employer/user_job_role",
+        { params: { job_role: titleRef.current.value }, withCredentials: true }
+      );
+      const jobSeekers = usersResponse.data.data;
+      const employer_name = usersResponse.data.employer_name;
+      const employer_email = usersResponse.data.employer_email;
+      
+      console.log("Users with the same job role:\n", jobSeekers);
+      if(jobSeekers.length > 0){
+        jobSeekers.forEach((candidate) => {
+          const phone = candidate.phone;
+          emailNotify(candidate.name, candidate.email, employer_name, employer_email);
+        });
+      }
+
       toast.success("Job posted successfully!");
       setTimeout(() => {
         setshowForm(false);
@@ -88,15 +128,31 @@ const JobForm = ({ setshowForm }) => {
         className="bg-white rounded-lg shadow p-6 space-y-5 max-w-2xl"
       >
         <div>
-          <label className="block mb-1 font-medium">Job Title</label>
-          <input
-            type="text"
+          <label
+            htmlFor="job_role"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Job Role
+          </label>
+          <select
+            id="job_role"
+            name="job_role"
             ref={titleRef}
-            className="input input-bordered w-full border-yellow-400 bg-blue-50 focus:ring-yellow-400 focus:border-yellow-400"
+            className="select select-bordered w-full border-yellow-400 bg-blue-50 focus:ring-yellow-400 focus:border-yellow-400"
             required
-          />
+            defaultValue=""
+          >
+            <option value="">Select Job Role</option>
+            <option value="Frontend Developer">Frontend Developer</option>
+            <option value="Backend Developer">Backend Developer</option>
+            <option value="Network Engineer">Network Engineer</option>
+            <option value="DevOps Engineer">DevOps Engineer</option>
+            <option value="Cloud Engineer">Cloud Engineer</option>
+            <option value="Sales Executive">Sales Executive</option>
+            <option value="AI Researcher">AI Researcher</option>
+            <option value="Data Analyst">Data Analyst</option>
+          </select>
         </div>
-
         <div>
           <label className="block mb-1 font-medium">Description</label>
           <textarea
@@ -106,7 +162,6 @@ const JobForm = ({ setshowForm }) => {
             required
           />
         </div>
-
         <div>
           <label className="block mb-1 font-medium">Company</label>
           <input
@@ -116,7 +171,6 @@ const JobForm = ({ setshowForm }) => {
             required
           />
         </div>
-
         <div className="flex gap-4">
           <div className="flex-1">
             <label className="block mb-1 font-medium">Job Type</label>
@@ -145,7 +199,6 @@ const JobForm = ({ setshowForm }) => {
             </select>
           </div>
         </div>
-
         <div>
           <label className="block mb-1 font-medium">Location</label>
           <input
@@ -155,12 +208,9 @@ const JobForm = ({ setshowForm }) => {
             placeholder="City, Country"
           />
         </div>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block mb-1 font-medium">
-              Min Exp (years)
-            </label>
+            <label className="block mb-1 font-medium">Min Exp (years)</label>
             <input
               type="number"
               ref={experienceMinRef}
@@ -169,9 +219,7 @@ const JobForm = ({ setshowForm }) => {
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">
-              Max Exp (years)
-            </label>
+            <label className="block mb-1 font-medium">Max Exp (years)</label>
             <input
               type="number"
               ref={experienceMaxRef}
@@ -180,7 +228,6 @@ const JobForm = ({ setshowForm }) => {
             />
           </div>
         </div>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block mb-1 font-medium">Min Salary (LPA)</label>
@@ -201,7 +248,6 @@ const JobForm = ({ setshowForm }) => {
             />
           </div>
         </div>
-
         {/* Updated Company Logo Section with Custom Upload UI */}
         <div>
           <label className="block mb-2 font-medium flex items-center gap-2">
@@ -249,7 +295,10 @@ const JobForm = ({ setshowForm }) => {
                 </span>
                 <button
                   type="button"
-                  onClick={removeLogo}
+                  onClick={() => {
+                    setLogoFile(null);
+                    companyLogoRef.current.value = "";
+                  }}
                   className="text-red-600 hover:text-red-800 text-sm font-medium"
                   disabled={isUploading}
                 >
@@ -259,7 +308,6 @@ const JobForm = ({ setshowForm }) => {
             )}
           </div>
         </div>
-
         {/* <div>
           <label className="block mb-1 font-medium">
             Expires At (optional)
@@ -270,7 +318,6 @@ const JobForm = ({ setshowForm }) => {
             className="input input-bordered w-full border-yellow-400 bg-blue-50 focus:ring-yellow-400 focus:border-yellow-400"
           />
         </div> */}
-
         <div className="flex justify-end gap-2">
           <button
             type="button"
