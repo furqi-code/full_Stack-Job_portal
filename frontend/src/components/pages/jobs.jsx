@@ -1,8 +1,9 @@
-import { useEffect, useState, useContext } from "react";
-import { Link } from "react-router";
+import { useEffect, useContext } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { jobContext } from "../../store/jobContext";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
 
@@ -27,50 +28,46 @@ const filterData = [
   {
     filterType: "Salary",
     array: ["4L to 6L", "7L to 11L", "12L to 15L", "16L to 45L", "45LPA +"],
-  },  
+  },
 ];
 
 const Jobs = () => {
   const { getSavedJobList, isLoggedin } = useContext(jobContext);
-  const [clicked, setClicked] = useState("");
-  const [cancelFilter, setCancelFilter] = useState(true);
-  const [joblist, setJoblist] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  // console.log("joblist in job page\n", joblist);
-
-  useEffect(() => {
-    setLoading(true);
-    const filterBy = searchParams.get("filter");
-    const filterType = searchParams.get("filterType");
-    axios({
+  
+  const filterBy = searchParams.get("filter");
+  const filterType = searchParams.get("filterType");
+  const clicked = filterBy || "";  
+  
+  const fetchJoblist = () => {
+    return axios({
       method: "GET",
       url: "http://localhost:1111/joblist",
       params: filterBy && filterType ? { filterBy, filterType } : null,
     })
-      .then((res) => {
-        setJoblist(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError("Couldn't fetch the joblist");
-        setLoading(false);
-      });
-
-    setClicked(filterBy || "");
-  }, [cancelFilter, searchParams]);
-
+    .then((res) => {
+      return res.data.data;
+    })
+    .catch((err) => {
+      console.error("API failed:", err.message);
+      throw err // necessary for react Query retries if using .catch block
+    }); 
+  };
+  
+  const { data: joblist = [], isLoading, isError } = useQuery({
+    queryKey: ['joblist', filterBy, filterType],
+    queryFn: fetchJoblist,
+    staleTime: 10000
+  });
+  
   useEffect(() => {
     if (isLoggedin) {
       getSavedJobList();
     }
-  }, [isLoggedin]); 
+  }, [isLoggedin]);
 
   // on select Filter
   const handleChange = (value, filterType) => {
-    setLoading(true);
-    setClicked(value);
     setSearchParams({ filter: value, filterType });
   };
 
@@ -107,7 +104,9 @@ const Jobs = () => {
                           value={data}
                           className="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                           checked={clicked === data}
-                          onChange={(event) => handleChange(event.target.value, filter.filterType) }
+                          onChange={(event) =>
+                            handleChange(event.target.value, filter.filterType)
+                          }
                         />
                         <span className="ml-2">{data}</span>
                       </label>
@@ -117,26 +116,24 @@ const Jobs = () => {
               ))}
               <button
                 className="mt-4 px-5 py-2 bg-white border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-200 cursor-grab"
-                onClick={() => {
-                  setCancelFilter(!cancelFilter);
-                  setSearchParams();
-                  setClicked("");
-                }}
+                onClick={() => setSearchParams()}
               >
                 Clear Filters
               </button>
             </div>
 
             <div className="flex-1">
-              {loading ? (
+              {isLoading ? (
                 <div className="flex justify-center items-center min-h-[300px]">
                   <p className="text-gray-600 text-lg">
                     Loading list of jobs...
                   </p>
                 </div>
-              ) : error ? (
+              ) : isError ? (
                 <div className="flex justify-center items-center min-h-[300px]">
-                  <p className="text-red-600 text-lg">{error}</p>
+                  <p className="text-red-600 text-lg">
+                    Failed to load jobs
+                  </p>
                 </div>
               ) : joblist.length > 0 ? (
                 <div className="grid grid-cols-3 gap-8">
@@ -176,7 +173,7 @@ const Jobs = () => {
           </div>
         </div>
       </div>
-      <ToastContainer position="top-right" />
+      <ToastContainer position="bottom-right" />
     </>
   );
 };

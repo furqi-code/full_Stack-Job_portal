@@ -1,30 +1,19 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { jobContext } from "../../store/jobContext";
 import { ToastContainer, toast } from "react-toastify";
-import { Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
 
 const HomeDesign = () => {
   const { getSavedJobList, isLoggedin } = useContext(jobContext);
-  const [joblist, setJoblist] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    axios({
-      method: "GET",
-      url: "http://localhost:1111/joblist",
-    })
-      .then((res) => {
-        setJoblist(res.data.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log("Couldn't fetch latest joblist");
-        setLoading(false);
-      });
-  }, []);
+  const { data: joblist = [], isLoading, isError } = useQuery({
+    queryKey: ["joblist"],
+    queryFn: () => axios.get("http://localhost:1111/joblist").then((res) => res.data.data),
+    staleTime: 10000
+  });
 
   // because the API call to set the authentication cookie is asynchronous,
   // the useEffect hook on this page runs before the /auth/status API call in the context provider completes, causing isLoggedin to be undefined.
@@ -33,7 +22,7 @@ const HomeDesign = () => {
     if (isLoggedin) {
       getSavedJobList();
     }
-  }, [isLoggedin]); 
+  }, [isLoggedin]);
 
   return (
     <>
@@ -77,23 +66,18 @@ const HomeDesign = () => {
               {/* Map your job cards here */}
             </div>
           </div>
-
           <section className="my-10 w-full">
             <h2 className="text-3xl md:text-4xl font-bold mb-10">
               Featured Job Openings
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
-              {!loading ? (
-                <>
-                  {joblist.slice(-5).reverse().map((job) => (
-                      <Link to={`/jobs/${job.id}`} key={job.id}>
-                        <JobCard job={job} />
-                      </Link>
-                    ))}
-                </>
-              ) : (
+              {isError ? (
+                <div className="col-span-full text-center py-12 text-gray-500 text-xl">
+                  Failed to load jobs
+                </div>
+              ) : isLoading ? (
                 <div
-                  className="flex justify-center items-center min-h-[300px]"
+                  className="flex justify-center items-center text-center min-h-[300px]"
                   role="status"
                   aria-live="polite"
                   aria-busy="true"
@@ -122,12 +106,22 @@ const HomeDesign = () => {
                     Loading list of jobs...
                   </span>
                 </div>
+              ) : joblist.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-gray-500 text-xl">
+                  No featured jobs available right now.
+                </div>
+              ) : (
+                joblist.slice(-5).reverse().map((job) => (
+                  <Link to={`/jobs/${job.id}`} key={job.id}>
+                    <JobCard job={job} />
+                  </Link>
+                ))
               )}
             </div>
           </section>
         </main>
       </div>
-      <ToastContainer position="bottom-right"/>
+      <ToastContainer position="bottom-right" />
     </>
   );
 };
