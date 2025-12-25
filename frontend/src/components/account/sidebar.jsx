@@ -4,9 +4,10 @@ import {
   HeartIcon,
   KeyIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useContext } from "react";
-import { Link, useNavigate } from "react-router";
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { jobContext } from "../../store/jobContext";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const Sidebar = ({ name, profilePic, setName, setProfilePic }) => {
@@ -72,39 +73,26 @@ const Sidebar = ({ name, profilePic, setName, setProfilePic }) => {
     ];
   }
 
-  useEffect(() => {
-    // both api call gives the same output for profile btw (unnecessary)
-    if (user_type === "job_seeker") {
-      axios({
-        method: "GET",
-        url: "http://localhost:1111/account/job_seeker/profile",
-        withCredentials: true,
-      })
-        .then((res) => {
-          const { name, profile_pic } = res.data.info;
-          setName(name);
-          setProfilePic(profile_pic);
-        })
-        .catch((err) => {
-          console.log("Couldn't fetch job_seeker profile", err);
-        });
-    }
-    if (user_type === "employer") {
-      axios({
-        method: "GET",
-        url: "http://localhost:1111/account/employer/profile",
-        withCredentials: true,
-      })
-        .then((res) => {
-          const { name, profile_pic } = res.data.info;
-          setName(name);
-          setProfilePic(profile_pic);
-        })
-        .catch((err) => {
-          console.log("Couldn't fetch Employer profile", err);
-        });
-    }
-  }, []);
+  const fetchUserDetail = async () => {
+    let url = '';
+    if(user_type === "job_seeker")
+      url = "http://localhost:1111/account/job_seeker/profile" 
+    else if (user_type === "employer")
+      url = "http://localhost:1111/account/employer/profile";
+    
+    const res = await axios.get(url, { withCredentials: true });
+    return res.data.info;
+  }
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user_type],
+    queryFn: fetchUserDetail,
+  });
+  
+  if (profile) {
+    setName(profile.name);
+    setProfilePic(profile.profile_pic);
+  }
 
   const logout = () => {
     axios({

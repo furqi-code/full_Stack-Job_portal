@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
 import Sidebar from "./sidebar";
 import axios from "axios";
 
@@ -9,39 +10,46 @@ const ChangePassword = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   // used in sidebar
-  const [profilePic, setProfilePic] = useState(""); 
-  const [name, setName] = useState("");   
+  const [profilePic, setProfilePic] = useState("");
+  const [name, setName] = useState("");
+
+  const modifyPassword = async ({ currentPassword, newPassword, confirmPassword }) => {
+    const res = await axios({
+      method: "PATCH",
+      url: "http://localhost:1111/account/job_seeker/change-password",
+      data: { currentPassword, newPassword, confirmPassword },
+      withCredentials: true,
+    })
+    return res.data;
+  };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: modifyPassword,
+    onSuccess: () => {
+      currentPasswordRef.current.value = "";
+      newPasswordRef.current.value = "";
+      confirmPasswordRef.current.value = "";
+      setSuccess("Password changed successfully");
+      setTimeout(() => setSuccess(""), 2000);
+    },
+    onError: (err) => {
+      console.log("Mutation Error:", err.response?.data);
+      setError(err.response?.data?.message || "Something went wrong");
+    },
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    const currentPassword = currentPasswordRef.current.value;
-    const newPassword = newPasswordRef.current.value;
-    const confirmPassword = confirmPasswordRef.current.value;
+    const currentPassword = currentPasswordRef.current?.value;
+    const newPassword = newPasswordRef.current?.value;
+    const confirmPassword = confirmPasswordRef.current?.value;
     if (newPassword !== confirmPassword) {
-      setError("new/confirm Passwords do not match");
-      return;
+      return setError("New/confirm passwords do not match");
     }
-    axios({
-      method: "PATCH",
-      url: "http://localhost:1111/account/job_seeker/change-password",
-      data: {
-        currentPassword,
-        newPassword,
-        confirmPassword,
-      },
-      withCredentials: true,
-    })
-      .then((res) => {
-        setSuccess("Password changed successfully");
-        setTimeout(() => {
-          setSuccess('');
-        }, 2000);
-      })
-      .catch((err) => {
-        setError(err.response?.data?.message || "Something went wrong");
-      });
+    
+    mutate({ currentPassword, newPassword, confirmPassword });
   };
 
   return (
@@ -49,15 +57,12 @@ const ChangePassword = () => {
       <div className="py-8 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <div className="container mx-auto px-4 max-w-[1440px]">
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Sidebar */}
             <Sidebar
               name={name}
               profilePic={profilePic}
               setName={setName}
               setProfilePic={setProfilePic}
             />
-
-            {/* Main Content */}
             <main className="flex-1">
               <div className="space-y-6">
                 <div className="bg-white shadow rounded-lg p-6">
@@ -140,9 +145,10 @@ const ChangePassword = () => {
                     <div className="pt-4">
                       <button
                         type="submit"
-                        className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-teal-700 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all duration-300 border border-transparent"
+                        disabled={isPending}
+                        className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-teal-700 hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all duration-300 border border-transparent disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                       >
-                        Update Password
+                        {isPending ? "Updating..." : "Update Password"}
                       </button>
                     </div>
                   </form>
