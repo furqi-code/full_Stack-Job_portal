@@ -269,4 +269,32 @@ router.get("/appliedJob", async (req, res) => {
   }
 });
 
+router.delete('/removeAppliedJob', async (req, res) => {
+  try {
+    const { user_id, user_type } = req;
+    const { job_id } = req.query;
+    if (!job_id) {
+      return res.status(400).send({ message: "Job ID is required" });
+    }
+    if (user_type === 'job_seeker') {
+      const result = await executeQuery(
+        'DELETE FROM applications WHERE candidate_id = ? AND job_id = ?',
+        [user_id, job_id]
+      );
+      if (result.affectedRows === 0) {
+        return res.status(404).send({ message: "Application not found" });
+      }
+      res.status(200).send({ message: "This job application has been deleted successfully"});
+    } else {
+      return res.status(403).send({ message: "only job seekers can withdraw applications"});
+    }
+
+  } catch (err) {
+    console.error("Error deleting job application: ", err);
+    res.status(500).send({
+      message: err.message || "Something went wrong while deleting application",
+    });
+  }
+});
+
 module.exports = router

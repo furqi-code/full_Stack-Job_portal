@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import AppliedJobTable from "../../shared/appliedJobTable";
 import Sidebar from "../sidebar";
 import axios from "axios";
@@ -9,6 +10,25 @@ const AppliedJobs = () => {
   // used in sidebar
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
+
+  const handleDeleteApplication = async (job_id) => {
+    try {
+      await axios.delete(
+        `http://localhost:1111/account/job_seeker/removeAppliedJob?job_id=${job_id}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      toast.success("Application withdrawn successfully!!");
+      setAppliedJobs((prev) => prev.filter((job) => job.id !== job_id));
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to delete application"
+      );
+    }
+  };
 
   useEffect(() => {
     axios({
@@ -75,6 +95,7 @@ const AppliedJobs = () => {
                             job={job}
                             appliedJobs={appliedJobs}
                             setAppliedJobs={setAppliedJobs}
+                            onDelete={handleDeleteApplication}
                           />
                         </Link>
                       ))
@@ -88,6 +109,7 @@ const AppliedJobs = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="bottom-right" />
     </>
   );
 };

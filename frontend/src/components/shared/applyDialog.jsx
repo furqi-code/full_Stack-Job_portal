@@ -6,10 +6,7 @@ import {
   DialogTitle,
   Description,
 } from "@headlessui/react";
-import {
-  ExclamationTriangleIcon,
-  DocumentIcon,
-} from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon, DocumentIcon } from "@heroicons/react/24/outline";
 import { useState, useRef } from "react";
 import axios from "axios";
 
@@ -20,14 +17,13 @@ export default function ApplyDialog({
   success,
   setSuccess,
 }) {
-  const resumeFileRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState()
   const [resumePreview, setResumePreview] = useState("");
   const [error, setError] = useState("");
 
   const handleResumeInputChange = (e) => {
     setError("");
-    // const file = e.target.files[0];
-    const file = resumeFileRef.current.files[0];
+    const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith("application/")) {
         return setError("Please select a valid PDF / DOC file");
@@ -35,6 +31,7 @@ export default function ApplyDialog({
       if (file.size > 5 * 1024 * 1024) {
         return setError("File size must be under 5MB");
       }
+      setSelectedFile(file);
       setResumePreview(file);
     }
   };
@@ -42,11 +39,12 @@ export default function ApplyDialog({
   const handleApplyJob = () => {
     setError("");
     setSuccess("");
-    if (resumeFileRef.current.files.length === 0) {
-      return setError("Please select a resume file first");
+    
+    if (!selectedFile) {
+      return setError("Please select a resume file");
     }
     const formData = new FormData();
-    formData.append("resume", resumeFileRef.current.files[0]);
+    formData.append("resume", selectedFile);
 
     axios({
       method: "POST",
@@ -59,7 +57,7 @@ export default function ApplyDialog({
     })
       .then((res) => {
         console.log("resume uploaded", res.data.message);
-        resumeFileRef.current.value = "";
+        setSelectedFile(null);
         setResumePreview("");
         setSuccess("Resume uploaded successfully");
         setTimeout(() => {
@@ -133,7 +131,6 @@ export default function ApplyDialog({
                     <input
                       type="file"
                       id="resume"
-                      ref={resumeFileRef}
                       onChange={handleResumeInputChange}
                       accept=".pdf,.doc,.docx"
                       className="sr-only"
@@ -163,8 +160,7 @@ export default function ApplyDialog({
                         type="button"
                         onClick={() => {
                           setResumePreview("");
-                          if (resumeFileRef.current)
-                            resumeFileRef.current.value = "";
+                          setSelectedFile(null);
                         }}
                         className="p-2 hover:bg-white/20 hover:text-white rounded-xl backdrop-blur-sm transition-all duration-200 hover:scale-110 flex items-center justify-center group/remove hover:shadow-md"
                         title="Change file"
@@ -212,7 +208,7 @@ export default function ApplyDialog({
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
                   form="resume-form"
                   onClick={handleApplyJob}
                   className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-400 sm:ml-3 sm:w-auto"
