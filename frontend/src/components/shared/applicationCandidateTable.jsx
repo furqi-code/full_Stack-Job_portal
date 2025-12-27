@@ -1,7 +1,7 @@
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
-const CandidateTable = ({ candidate, setApplications }) => {
+const CandidateTable = ({ candidate, queryClient }) => {
   const getModeColor = (mode) => {
     const modes = {
       Hybrid: "bg-yellow-100 text-yellow-700 border-yellow-200",
@@ -20,25 +20,14 @@ const CandidateTable = ({ candidate, setApplications }) => {
     })
       .then((res) => {
         toast.info(`this candidate got ${candidate_status}`);
-        // could have called an api to get fresh data but better approach i directly change the state after the operation
-        // keeping all applications except the one that was just shortlisted / rejected
-        setApplications((prevApplications) => {
-          return prevApplications.filter((app) => {
-            const isSameCandidate = app.candidate_id === candidate_id && app.job_id === job_id;
-            return !isSameCandidate;
-          });
-        });
-
-        // other approach (unnecessary)
-        // to see the updated candidates also but then you have to remove a.status=? in WHERE clause in employer.js
-        // to get all the application you have/had from candidates
-        // setApplications((prevApplications) =>
-        //   prevApplications.map((app) =>
-        //     app.profile_id === candidate_id && app.job_id === job_id
-        //       ? { ...app, status: candidate_status }
-        //       : app
-        //   )
-        // );
+        // could have called an api to get fresh data but better approach i directly change the parent state (before) / optimistic cache update (after)
+        // after the operation keeping all the applications that DON'T match
+        queryClient.setQueryData(["applications"], (oldData = []) =>
+          oldData.filter((app) => {
+            const isSameCandidate = (app.candidate_id === candidate_id && app.job_id === job_id)
+            return !isSameCandidate  
+          })
+        );
       })
       .catch((error) => {
         console.error("Error while candidate selection:", error);
