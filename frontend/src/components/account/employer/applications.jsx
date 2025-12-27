@@ -16,7 +16,7 @@ const Applications = () => {
       const res = await axios('http://localhost:1111/account/employer/applications', {withCredentials: true})
       return res.data.data
     }catch(err){
-      console.log(err)
+      console.error("Error fetching your Applications:", err);
       throw err
     }
   }

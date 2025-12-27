@@ -19,7 +19,7 @@ const PostedJobs = () => {
       })
       return res.data.data
     }catch(err){
-      console.log(err);
+      console.error("Error fetching your posted Jobs:", err);
       throw err;
     }
   }

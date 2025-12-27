@@ -234,7 +234,7 @@ router.get("/appliedJobs", async (req, res) => {
       WHERE a.candidate_id = ?
       ORDER BY a.applied_at DESC`, [user_id]);  
     if (appliedJobs.length === 0) {
-      return res.status(404).send({ data: [] });
+      return res.status(200).send({ data: [] });
     }
     res.status(200).send({ data: appliedJobs });
   } catch (err) {
