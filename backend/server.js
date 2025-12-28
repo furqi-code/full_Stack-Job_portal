@@ -4,6 +4,12 @@ const app = express();
 const PORT = parseInt(process.env.PORT) || 3000;
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
+
+const globalLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 500 });
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
+const jobListLimiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 200 });
+const writeLimiter = rateLimit({ windowMs: 5 * 60 * 1000, max: 100 });
 
 // Local modules
 const register = require("./router/register");
@@ -15,6 +21,7 @@ const jobs = require("./router/joblist");
 const job_seeker = require("./router/job-seeker");
 const employer = require("./router/employer");
 
+app.use(globalLimiter);
 app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,15 +34,15 @@ app.use(
 );
   
 // Public routes 
-app.use('/register', register);
-app.use('/login', login)
-app.use('/logout', logout);
-app.use("/forgotPassword", forgot);
+app.use('/register', authLimiter, register);
+app.use('/login', authLimiter, login)
+app.use('/logout', authLimiter, logout);
+app.use("/forgotPassword", authLimiter, forgot);
 app.use('/auth/status', isLoggedin)  // to set the state in JobContextProvider
-app.use('/joblist', jobs);
+app.use('/joblist', jobListLimiter, jobs);
 // Protected routes
-app.use('/account/job_seeker', job_seeker);
-app.use('/account/employer', employer);
+app.use('/account/job_seeker', writeLimiter, job_seeker);
+app.use('/account/employer', writeLimiter, employer);
 
 
 app.listen(PORT, function () {
