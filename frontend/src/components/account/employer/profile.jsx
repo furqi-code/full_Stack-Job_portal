@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { Cog6ToothIcon, CameraIcon } from "@heroicons/react/24/outline";
 import { jobContext } from "../../../store/jobContext";
+import { useQuery } from "@tanstack/react-query";
 import Sidebar from "../sidebar";
 import axios from "axios";
 
@@ -11,8 +12,6 @@ const Employer_profile = () => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
   const [date, setDate] = useState(null);
-  const [totalPostedJobs, setTotalPostedJobs] = useState(0);
-  const [totalApplications, setTotalApplications] = useState(0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [imgPreview, setImgPreview] = useState("");
@@ -52,34 +51,25 @@ const Employer_profile = () => {
   }, [success]);
 
   // Account statistics data fetch
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:1111/account/employer/myJobs",
-      withCredentials: true,
-    })
-      .then((res) => {
-        if (res.data.data.length > 0) setTotalPostedJobs(res.data.data.length);
-      })
-      .catch((err) => {
-        console.log("Couldn't fetch user posted jobs", err);
-      });
-  }, []);
-
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:1111/account/employer/applications`,
-      withCredentials: true,
-    })
-      .then((res) => {
-        if (res.data.data.length > 0)
-          setTotalApplications(res.data.data.length);
-      })
-      .catch((err) => {
-        console.log("Error while fetching your applications");
-      });
-  }, []);
+ const { data: totalPostedJobs } = useQuery({
+    queryKey: ['employer', 'myJobs'],
+    queryFn: () => 
+      axios({
+        method: 'GET',
+        url: 'http://localhost:1111/account/employer/myJobs',
+        withCredentials: true,
+      }).then(res => res.data.data.length),
+  });
+  // staleTime isn't necessary here because stats like (applications/posted jobs) need real-time accuracy for the profile dashboard
+  const { data: totalApplications } = useQuery({
+    queryKey: ['employer', 'applications'],
+    queryFn: () => 
+      axios({
+        method: 'GET',
+        url: 'http://localhost:1111/account/employer/applications',
+        withCredentials: true,
+      }).then(res => res.data.data.length),
+  });
 
   const handleImageInputChange = (e) => {
     // const file = e.target.files[0];
@@ -130,7 +120,7 @@ const Employer_profile = () => {
         setImgPreview("");
         setSuccess("Profile updated successfully.");
         setTimeout(() => {
-          setSuccess("");
+          setSuccess(""); // not working as code now gets bigger forcing user to do manullay reload
         }, 2000);
       })
       .catch((err) => {

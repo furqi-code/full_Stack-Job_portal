@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { Cog6ToothIcon, CameraIcon } from "@heroicons/react/24/outline";
 import { jobContext } from "../../../store/jobContext";
+import { useQuery } from "@tanstack/react-query";
 import Sidebar from "../sidebar";
 import axios from "axios";
 
@@ -11,8 +12,6 @@ const Job_seeker_profile = () => {
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
   const [date, setDate] = useState(null);
-  const [totalAppliedJobs, setTotalAppliedJobs] = useState(0);
-  const [totalSaveJobs, setTotalSaveJobs] = useState(0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [imgPreview, setImgPreview] = useState("");
@@ -58,34 +57,18 @@ const Job_seeker_profile = () => {
   }, [success]); 
 
   // Account statistics data fetch
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:1111/account/job_seeker/appliedJobs",
-      withCredentials: true
-    })
-      .then((res) => {
-        if (res.data.data.length > 0) setTotalAppliedJobs(res.data.data.length);
-      })
-      .catch((err) => {
-        console.log("Couldn't fetch user applied jobs", err);
-      });
-  },[]);
-
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: `http://localhost:1111/account/job_seeker/savedJob`,
-      withCredentials: true
-    })
-      .then((res) => {
-        if (res.data.data.length > 0) setTotalSaveJobs(res.data.data.length);
-      })
-      .catch((err) => {
-        console.log("Error while fetching your saved jobs");
-      });
-  },[]);
-
+  const {data: totalAppliedJobs} = useQuery({
+    queryKey: ['job_seeker', 'totalAppliedJobs'],
+    queryFn: () => axios.get("http://localhost:1111/account/job_seeker/appliedJobs",{withCredentials: true})
+      .then((res) => res.data.data.length),
+  })
+  // staleTime isn't necessary here because stats like (applied/saved jobs) need real-time accuracy for the profile dashboard
+  const {data: totalSaveJobs} = useQuery({
+    queryKey: ['job_seeker', 'totalSaveJobs'],
+    queryFn: () => axios.get("http://localhost:1111/account/job_seeker/savedJob",{withCredentials: true})
+      .then((res) => res.data.data.length),
+  })
+  
   const handleImageInputChange = (e) => {
     setError("");
     // const file = e.target.files[0];
@@ -142,7 +125,7 @@ const Job_seeker_profile = () => {
         setSuccess("Profile updated successfully.");
         setTimeout(() => {
           setImgPreview('');
-          setSuccess("");
+          setSuccess(""); // not working as code now gets bigger forcing user to do manullay reload
         }, 2000);
       })
       .catch((err) => {
