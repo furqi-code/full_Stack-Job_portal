@@ -126,7 +126,10 @@ const Jobs = () => {
               ))}
               <button
                 className="mt-4 px-5 py-2 bg-white border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-100 transition-colors duration-200 cursor-grab"
-                onClick={() => setSearchParams()}
+                onClick={() => {
+                  setSkip(0);
+                  setSearchParams();
+                }}
               >
                 Clear Filters
               </button>

@@ -11,7 +11,7 @@ const HomeDesign = () => {
 
   const { data: joblist = [], isLoading, isError } = useQuery({
     queryKey: ["joblist"],
-    queryFn: () => axios.get("http://localhost:1111/joblist").then((res) => res.data.data),
+    queryFn: () => axios.get("http://localhost:1111/joblist?mode=homepage").then((res) => res.data.data),
     staleTime: 10000
   });
 

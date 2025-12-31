@@ -4,13 +4,17 @@ const { executeQuery } = require("../mySqldb/Query");
 
 router.get("/", async (req, res) => {
   try {
-    let { filterBy, filterType, } = req.query;   // when you select Filter
-    let { limit, skip } = req.query;   
-    limit = Number(limit) || 5;  
-    skip = Number(skip) || 0;
+    const { filterBy, filterType, mode, limit, skip } = req.query; 
+    const pageLimit = Number(limit) || 5;  
+    const pageSkip = Number(skip) || 0;
     let jobs, total=0;
-
-    if (filterBy && filterType) {
+    
+    // Homepage: some recent jobs (no filters/pagination)
+    if (mode === 'homepage') {
+      jobs = await executeQuery(`select * from jobs`);
+    }
+    // Job page: when clicked on filter
+    else if (filterBy && filterType) { 
       switch (filterType) {
         case "Location":
           jobs = await executeQuery(`select * from jobs where location = ?`, [filterBy]);
@@ -38,7 +42,7 @@ router.get("/", async (req, res) => {
           return res.status(400).send({ message: "Invalid filterType" });
       }
     } else {
-      jobs = await executeQuery(`SELECT * FROM jobs LIMIT ? OFFSET ?`, [limit, skip]); 
+      jobs = await executeQuery(`SELECT * FROM jobs LIMIT ? OFFSET ?`, [pageLimit, pageSkip]); 
       total = (await executeQuery("select count(*) as cnt from jobs"))[0].cnt;
     }
 
