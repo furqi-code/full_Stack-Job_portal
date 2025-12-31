@@ -1,8 +1,8 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { jobContext } from "../../store/jobContext";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import JobCard from "../shared/jobCard";
 import axios from "axios";
@@ -34,32 +34,42 @@ const filterData = [
 const Jobs = () => {
   const { getSavedJobList, isLoggedin } = useContext(jobContext);
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
+  const pageSize = 5;
+  const limit = pageSize
+  const [skip, setSkip] = useState(0);
   const filterBy = searchParams.get("filter");
   const filterType = searchParams.get("filterType");
-  const clicked = filterBy || "";  
-  
+  const clicked = filterBy || "";
+
   const fetchJoblist = () => {
     return axios({
       method: "GET",
       url: "http://localhost:1111/joblist",
-      params: filterBy && filterType ? { filterBy, filterType } : null,
+      params:
+        filterBy && filterType ? { filterBy, filterType } : { limit, skip },
     })
-    .then((res) => {
-      return res.data.data;
-    })
-    .catch((err) => {
-      console.error("API failed:", err.message);
-      throw err // necessary for react Query retries if using .catch block
-    }); 
+      .then((res) => {
+        return res.data; 
+      })
+      .catch((err) => {
+        console.error("API failed:", err.message);
+        throw err; // necessary for react Query retries if using .catch block
+      });
   };
-  
-  const { data: joblist = [], isLoading, isError } = useQuery({
-    queryKey: ['joblist', filterBy, filterType],
+
+  const { data: result, isLoading, isError } = useQuery({
+    queryKey: ["joblist", filterBy, filterType, skip],
     queryFn: fetchJoblist,
-    staleTime: 10000
+    placeholderData: keepPreviousData,
+    staleTime: 10000,
   });
-  
+
+  const joblist = result?.data || [];
+  const totalJobs = result?.total || 0;
+  const hasPrevPage = skip > 0;
+  const hasNextPage = skip + pageSize < totalJobs;
+
   useEffect(() => {
     if (isLoggedin) {
       getSavedJobList();
@@ -131,9 +141,7 @@ const Jobs = () => {
                 </div>
               ) : isError ? (
                 <div className="flex justify-center items-center min-h-[300px]">
-                  <p className="text-red-600 text-lg">
-                    Failed to load jobs
-                  </p>
+                  <p className="text-red-600 text-lg">Failed to load jobs</p>
                 </div>
               ) : joblist.length > 0 ? (
                 <div className="grid grid-cols-3 gap-8">
@@ -167,6 +175,31 @@ const Jobs = () => {
                   >
                     No jobs available right now
                   </h2>
+                </div>
+              )}
+              {!filterBy && !filterType && !isLoading && !isError && joblist.length > 0 && (
+                <div className="mt-8 flex justify-center">
+                  <div className="w-80 px-4 py-3 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-center">
+                      <button
+                        disabled={!hasPrevPage}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100"
+                        onClick={() => hasPrevPage && setSkip((prev) => prev - pageSize)}
+                      >
+                        Prev
+                      </button>
+                      <span className="text-sm font-medium text-gray-700">
+                        Page {skip / pageSize + 1}
+                      </span>
+                      <button
+                        disabled={!hasNextPage}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100"
+                        onClick={() => hasNextPage && setSkip((prev) => prev + pageSize)}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

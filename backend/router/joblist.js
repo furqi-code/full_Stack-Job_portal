@@ -4,8 +4,11 @@ const { executeQuery } = require("../mySqldb/Query");
 
 router.get("/", async (req, res) => {
   try {
-    let { filterBy, filterType } = req.query;   // when you select Filter
-    let jobs;
+    let { filterBy, filterType, } = req.query;   // when you select Filter
+    let { limit, skip } = req.query;   
+    limit = Number(limit) || 5;  
+    skip = Number(skip) || 0;
+    let jobs, total=0;
 
     if (filterBy && filterType) {
       switch (filterType) {
@@ -35,13 +38,14 @@ router.get("/", async (req, res) => {
           return res.status(400).send({ message: "Invalid filterType" });
       }
     } else {
-      jobs = await executeQuery(`SELECT * FROM jobs`);
+      jobs = await executeQuery(`SELECT * FROM jobs LIMIT ? OFFSET ?`, [limit, skip]); 
+      total = (await executeQuery("select count(*) as cnt from jobs"))[0].cnt;
     }
 
     if (jobs.length === 0) {
-      return res.status(200).send({ data: [] });
+      return res.status(200).send({ data: [], total });
     }
-    res.status(200).send({ data: jobs });
+    res.status(200).send({ data: jobs, total });
   } catch (err) {
     console.error("Error fetching jobs:", err);
     return res.status(500).send({
@@ -50,7 +54,6 @@ router.get("/", async (req, res) => {
     });
   }
 });
-
 
 // Fetch one Job by id
 router.get("/oneJob", async (req, res) => {
