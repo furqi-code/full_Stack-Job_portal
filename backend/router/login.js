@@ -7,14 +7,13 @@ const { executeQuery } = require("../mySqldb/Query");
 
 Router.post("/", async (req, res) => {
   try {
-    const { email, password, role } = req.body;
-    if (!email || !password || !role) {
+    const { email, password } = req.body;
+    if (!email || !password) {
       return res.status(409).send("Provide necessary details");
     }
-    const [dbUser] = await executeQuery(`SELECT * FROM users WHERE email = ? AND role = ?`,
-      [email, role]);
+    const [dbUser] = await executeQuery(`SELECT * FROM users WHERE email = ?`, [email]);
     if (!dbUser) {
-      return res.status(401).send("Invalid Email / Role");
+      return res.status(401).send("Invalid Email / Password");
     }
 
     const hashpwrd = dbUser.password;

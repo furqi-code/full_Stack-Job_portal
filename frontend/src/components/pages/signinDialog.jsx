@@ -11,7 +11,6 @@ export function SigninDialog({
   const { setIsloggedin, setUser_type } = useContext(jobContext);
   const emailRef = useRef();
   const passwordRef = useRef();
-  const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -28,7 +27,6 @@ export function SigninDialog({
       data: {
         email,
         password,
-        role,
       },
       withCredentials: true,
     })
@@ -43,7 +41,7 @@ export function SigninDialog({
       })
 
       .catch(() => {
-        setError("Invalid Email / Role / Password");
+        setError("Invalid Email / Password");
       });
   };
 
@@ -88,52 +86,6 @@ export function SigninDialog({
                   placeholder="Your Password"
                   autoComplete="on"
                 />
-              </div>
-
-              {/* ROLE RADIO GROUP */}
-              <div className="w-full max-w-sm min-w-[200px]">
-                <p className="block mb-2 text-sm text-slate-600">Select Role</p>
-                <div className="flex items-center gap-4">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="role"
-                      value="job_seeker"
-                      className="h-4 w-4 text-slate-800 border-slate-300 focus:ring-slate-500"
-                      checked={role === "job_seeker"}
-                      onChange={(e) => setRole(e.target.value)}
-                    />
-                    <span className="ml-2 text-sm text-slate-700">
-                      Job seeker
-                    </span>
-                  </label>
-
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="role"
-                      value="employer"
-                      className="h-4 w-4 text-slate-800 border-slate-300 focus:ring-slate-500"
-                      checked={role === "employer"}
-                      onChange={(e) => setRole(e.target.value)}
-                    />
-                    <span className="ml-2 text-sm text-slate-700">
-                      Employer
-                    </span>
-                  </label>
-
-                  {/* <label className="inline-flex items-center cursor-pointer">
-                    <input
-                      type="radio"
-                      name="role"
-                      value="admin"
-                      className="h-4 w-4 text-slate-800 border-slate-300 focus:ring-slate-500"
-                      checked={role === "admin"}
-                      onChange={(e) => setRole(e.target.value)}
-                    />
-                    <span className="ml-2 text-sm text-slate-700">Admin</span>
-                  </label> */}
-                </div>
               </div>
 
               <div className="inline-flex justify-between items-center mt-2">
