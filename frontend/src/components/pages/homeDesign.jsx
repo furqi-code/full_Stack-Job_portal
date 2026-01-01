@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { jobContext } from "../../store/jobContext";
 import { ToastContainer, toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
@@ -8,11 +8,28 @@ import axios from "axios";
 
 const HomeDesign = () => {
   const { getSavedJobList, isLoggedin } = useContext(jobContext);
+  const [searchText, setSearchText] = useState('');
 
+  // fetch latest jobs
   const { data: joblist = [], isLoading, isError } = useQuery({
     queryKey: ["joblist"],
     queryFn: () => axios.get("http://localhost:1111/joblist?mode=homepage").then((res) => res.data.data),
     staleTime: 10000
+  });
+
+  // fetch searched jobs
+  // Same searchText = same key = cached hit
+  // Different searchText = new key = fresh fetch
+  const { data: searchedJobs = [], isLoading: searchLoading, isError: searchError } = useQuery({
+    queryKey: ["searchJoblist", searchText],
+    queryFn: async () => {
+      const res = await axios.get("http://localhost:1111/joblist", {
+        params: { mode: 'homepage', searchText: searchText.trim() }
+      });
+      return res.data.data; 
+    },
+    staleTime: 5000,
+    enabled: !!searchText.trim(),
   });
 
   // because the API call to set the authentication cookie is asynchronous,
@@ -55,15 +72,54 @@ const HomeDesign = () => {
                 <input
                   type="text"
                   placeholder="Search your Job"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300 ease-in-out"
                 />
               </div>
-              <button className="px-5 py-2 text-sm bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out cursor-pointer">
-                Search
-              </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0 mt-6">
-              {/* Map your job cards here */}
+              {searchError && (
+                 <div className="col-span-full text-center py-12 text-gray-500 text-xl">
+                  something is wrong!! Failed to load jobs.
+                </div>
+              )}
+              {searchLoading && (
+                <div className="col-span-full flex justify-center items-center text-center min-h-[200px] py-12">
+                   <svg
+                    className="animate-spin h-8 w-8 text-green-600 mr-4 "
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                  <span className="text-gray-600 text-lg">Searching...</span>
+                </div>
+              )}
+              {searchText && !searchError && !searchLoading && searchedJobs.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-gray-500 text-xl">
+                  the job you are looking for isn't available right now.
+                </div>
+              ) : (
+                searchedJobs.map((job) => (
+                  <Link to={`/jobs/${job.id}`} key={job.id}>
+                    <JobCard job={job} />
+                  </Link>
+                ))
+              )}
             </div>
           </div>
           <section className="my-10 w-full">

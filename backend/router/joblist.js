@@ -4,14 +4,17 @@ const { executeQuery } = require("../mySqldb/Query");
 
 router.get("/", async (req, res) => {
   try {
-    const { filterBy, filterType, mode, limit, skip } = req.query; 
+    const { filterBy, filterType, limit, skip, mode, searchText } = req.query; 
     const pageLimit = Number(limit) || 5;  
     const pageSkip = Number(skip) || 0;
     let jobs, total=0;
-    
-    // Homepage: some recent jobs (no filters/pagination)
-    if (mode === 'homepage') {
+
+    // Homepage: no filters/pagination
+    if (mode === 'homepage' && !searchText) {
       jobs = await executeQuery(`select * from jobs`);
+    }
+    else if (mode === 'homepage' && searchText) { 
+      jobs = await executeQuery(`SELECT * FROM jobs WHERE title LIKE ?`, [`%${searchText}%`]);
     }
     // Job page: when clicked on filter
     else if (filterBy && filterType) { 
