@@ -8,7 +8,10 @@ import axios from "axios";
 
 const HomeDesign = () => {
   const { getSavedJobList, isLoggedin } = useContext(jobContext);
+  const [searchedJobs, setSearchedJobs] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [searchError, setSearchError] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   // fetch latest jobs
   const { data: joblist = [], isLoading, isError } = useQuery({
@@ -18,19 +21,44 @@ const HomeDesign = () => {
   });
 
   // fetch searched jobs
-  // Same searchText = same key = cached hit
-  // Different searchText = new key = fresh fetch
-  const { data: searchedJobs = [], isLoading: searchLoading, isError: searchError } = useQuery({
-    queryKey: ["searchJoblist", searchText],
-    queryFn: async () => {
+  const debounce = (fn, delay) => {
+    let timer ;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        fn(...args);
+      }, delay)
+    }
+  }
+
+  const manageSearching = async() => {
+    setSearchLoading(true);
+    try {
       const res = await axios.get("http://localhost:1111/joblist", {
         params: { mode: 'homepage', searchText: searchText.trim() }
       });
-      return res.data.data; 
-    },
-    staleTime: 5000,
-    enabled: !!searchText.trim(),
-  });
+      setSearchLoading(false);
+      setSearchedJobs(res.data.data);
+    } catch (error) {
+      setSearchLoading(false);
+      setSearchError(true);
+      console.error('Search failed:', error);
+    }
+  }
+
+  const debouncedSearch = debounce(manageSearching, 1000);
+
+  const handleSearchedText = async (event) => {
+    console.log('typing / backspacing: ', event.target.value.trim())
+    if (!event.target.value.trim()) {
+      setSearchedJobs([]);
+      setSearchLoading(false);
+      setSearchError(false);
+      return;
+    }
+    setSearchText(event.target.value);
+    debouncedSearch(event.target.value);
+  }
 
   // because the API call to set the authentication cookie is asynchronous,
   // the useEffect hook on this page runs before the /auth/status API call in the context provider completes, causing isLoggedin to be undefined.
@@ -73,7 +101,7 @@ const HomeDesign = () => {
                   type="text"
                   placeholder="Search your Job"
                   value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
+                  onChange={handleSearchedText}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300 ease-in-out"
                 />
               </div>
@@ -109,16 +137,16 @@ const HomeDesign = () => {
                   <span className="text-gray-600 text-lg">Searching...</span>
                 </div>
               )}
-              {searchText && !searchError && !searchLoading && searchedJobs.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-gray-500 text-xl">
-                  the job you are looking for isn't available right now.
-                </div>
-              ) : (
+              {!searchError && searchedJobs.length > 0 ? (
                 searchedJobs.map((job) => (
                   <Link to={`/jobs/${job.id}`} key={job.id}>
                     <JobCard job={job} />
                   </Link>
                 ))
+              ) : searchText && !searchError && !searchLoading && (
+                <div className="col-span-full text-center py-12 text-gray-500 text-xl">
+                  the job you are looking for isn't available right now.
+                </div>
               )}
             </div>
           </div>
