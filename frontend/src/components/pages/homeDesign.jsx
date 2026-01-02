@@ -20,45 +20,30 @@ const HomeDesign = () => {
     staleTime: 10000
   });
 
-  // fetch searched jobs
-  const debounce = (fn, delay) => {
-    let timer ;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        fn(...args);
-      }, delay)
+  useEffect(() => {
+    setSearchedJobs([]);
+    setSearchError(false);
+    if (!searchText.trim()){
+      return setSearchLoading(false);
     }
-  }
-
-  const manageSearching = async() => {
     setSearchLoading(true);
-    try {
-      const res = await axios.get("http://localhost:1111/joblist", {
-        params: { mode: 'homepage', searchText: searchText.trim() }
-      });
-      setSearchLoading(false);
-      setSearchedJobs(res.data.data);
-    } catch (error) {
-      setSearchLoading(false);
-      setSearchError(true);
-      console.error('Search failed:', error);
-    }
-  }
 
-  const debouncedSearch = debounce(manageSearching, 1000);
-
-  const handleSearchedText = async (event) => {
-    console.log('typing / backspacing: ', event.target.value.trim())
-    if (!event.target.value.trim()) {
-      setSearchedJobs([]);
-      setSearchLoading(false);
-      setSearchError(false);
-      return;
-    }
-    setSearchText(event.target.value);
-    debouncedSearch(event.target.value);
-  }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get("http://localhost:1111/joblist", {
+          params: { mode: 'homepage', searchText: searchText.trim() }
+        });
+        setSearchLoading(false);
+        setSearchedJobs(res.data.data);
+      } catch (error) {
+        setSearchLoading(false);
+        setSearchError(true);
+        console.error('Search failed:', error);
+      }
+    }, 1000);
+    
+    return () => clearTimeout(timer)
+  }, [searchText])
 
   // because the API call to set the authentication cookie is asynchronous,
   // the useEffect hook on this page runs before the /auth/status API call in the context provider completes, causing isLoggedin to be undefined.
@@ -101,7 +86,7 @@ const HomeDesign = () => {
                   type="text"
                   placeholder="Search your Job"
                   value={searchText}
-                  onChange={handleSearchedText}
+                  onChange={(e) => setSearchText(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300 ease-in-out"
                 />
               </div>
@@ -137,7 +122,7 @@ const HomeDesign = () => {
                   <span className="text-gray-600 text-lg">Searching...</span>
                 </div>
               )}
-              {!searchError && searchedJobs.length > 0 ? (
+              {searchedJobs.length > 0 ? (
                 searchedJobs.map((job) => (
                   <Link to={`/jobs/${job.id}`} key={job.id}>
                     <JobCard job={job} />
