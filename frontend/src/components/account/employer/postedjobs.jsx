@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query"; 
+import { ToastContainer, toast } from "react-toastify";
 import JobForm from "./jobform";
 import JobCard from "../../shared/jobCard";
 import Sidebar from "../sidebar";
@@ -108,6 +109,7 @@ const PostedJobs = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="bottom-left"/>
     </>
   );
 };
