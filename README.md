@@ -66,8 +66,3 @@ Create a `.env` file inside the `backend` directory and add the following:
 - Pagination and sorting
 - Deployment
 
-## Author
-
-**Md Furqan Ahmad**  
-Industrial Management Student  
-Full-Stack Developer
